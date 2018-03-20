@@ -1,4 +1,33 @@
-*.user
+##############################
+## Folders                  ##
+##############################
+target
+bin
+obj
+x86
+x64
+
+##############################
+## Netbeans conf            ##
+##############################
+nb-configuration.xml
+nbactions.xml
+
+
+##############################
+## Netbeans file            ##
+##############################
+*.a
+*.o
+*.lo
+*.la
+*.al
+*.so
+*.so.[0-9]*
+*.pyc
+*.pyo
+*.rej
 *.suo
-/bin/
-/obj/
+*.user
+*.class
+[Tt]humbs.db
