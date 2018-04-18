@@ -43,9 +43,13 @@ namespace AnyTablePrint
         public static void MergeCells(DataGridView dgv, DataGridViewCellPaintingEventArgs cellArgs, int minColIndex, int maxColIndex, MergeDirection kind)
         {
             if (kind == MergeDirection.Horizontal)
+            {
                 MergeCells(dgv, cellArgs, new int[] { cellArgs.RowIndex, cellArgs.RowIndex, minColIndex, maxColIndex });
+            }
             else
+            {
                 MergeCells(dgv, cellArgs, new int[] { minColIndex, maxColIndex, cellArgs.ColumnIndex, cellArgs.ColumnIndex });
+            }
         }
         /// <summary>
         /// 多行多列合并单元格
@@ -55,12 +59,13 @@ namespace AnyTablePrint
         /// <param name="indexArray">行最小值，行最大值，列最小值，列最大值</param>
         public static void MergeCells(DataGridView dgv, DataGridViewCellPaintingEventArgs cellArgs, int[] indexArray)
         {
-
-            StringFormat fmt = new StringFormat();
-            fmt.LineAlignment = StringAlignment.Center;
-            fmt.Alignment = StringAlignment.Near;
-            fmt.FormatFlags = StringFormatFlags.LineLimit;//自动换行
-            MergeCells(dgv, cellArgs, indexArray, dgv.GridColor, dgv.DefaultCellStyle.Font, fmt);
+            using (StringFormat fmt = new StringFormat())
+            {
+                fmt.LineAlignment = StringAlignment.Center;
+                fmt.Alignment = StringAlignment.Near;
+                fmt.FormatFlags = StringFormatFlags.LineLimit;//自动换行
+                MergeCells(dgv, cellArgs, indexArray, dgv.GridColor, dgv.DefaultCellStyle.Font, fmt);
+            }
         }
         /// <summary>
         /// 多行多列合并单元格
@@ -74,11 +79,15 @@ namespace AnyTablePrint
         public static void MergeCells(DataGridView dgv, DataGridViewCellPaintingEventArgs cellArgs, int[] indexArray, Color color, Font foreFont, StringFormat foreFormat)
         {
             if (indexArray[0] > indexArray[1] || indexArray[2] > indexArray[3] || indexArray[0] < 0 || indexArray[1] < 0 || indexArray[2] < 0 || indexArray[3] < 0 || cellArgs.RowIndex < indexArray[0] || cellArgs.RowIndex > indexArray[1] || cellArgs.ColumnIndex < indexArray[2] || cellArgs.ColumnIndex > indexArray[3])
+            {
                 return;
+            }
             string Index = cellArgs.RowIndex + "," + cellArgs.ColumnIndex;
             Rectangle rect = new Rectangle();
             using (Brush backColorBrush = new SolidBrush(cellArgs.CellStyle.BackColor))
+            {
                 cellArgs.Graphics.FillRectangle(backColorBrush, cellArgs.CellBounds);
+            }
             cellArgs.Handled = true;
 
             if (!rowSpan.ContainsKey(Index))
@@ -90,20 +99,30 @@ namespace AnyTablePrint
                 rect.Width = cellArgs.CellBounds.Width;
                 rect.Height = cellArgs.CellBounds.Height;
                 if (!rowValue.ContainsKey(indexArray[0] + "," + indexArray[2]))
+                {
                     rowValue.Add(indexArray[0] + "," + indexArray[2], cellArgs.Value == null ? "" : cellArgs.Value.ToString());
+                }
                 else
+                {
                     rowValue[indexArray[0] + "," + indexArray[2]] += cellArgs.Value == null ? "" : cellArgs.Value.ToString();
+                }
                 rowSpan.Add(Index, rect);
                 if (cellArgs.RowIndex == indexArray[1] && cellArgs.ColumnIndex == indexArray[3])
+                {
                     MergePrint(dgv, cellArgs, indexArray, color, foreFont, foreFormat);
+                }
                 return;
             }
             else
             {
                 if (!rowValue.ContainsKey(indexArray[0] + "," + indexArray[2]))
+                {
                     rowValue.Add(indexArray[0] + "," + indexArray[2], cellArgs.Value == null ? "" : cellArgs.Value.ToString());
+                }
                 else
+                {
                     rowValue[indexArray[0] + "," + indexArray[2]] += cellArgs.Value == null ? "" : cellArgs.Value.ToString();
+                }
                 IsPostMerge(dgv, cellArgs, indexArray, color, foreFont, foreFormat);
             }
         }
@@ -133,7 +152,9 @@ namespace AnyTablePrint
                 rowSpan[Index] = rectArgs;
             }
             if (cellArgs.RowIndex == indexArray[1] && cellArgs.ColumnIndex == indexArray[3])
+            {
                 MergePrint(dgv, cellArgs, indexArray, color, foreFont, foreFormat);
+            }
         }
         /// <summary>
         /// 绘制单元格
@@ -152,9 +173,13 @@ namespace AnyTablePrint
             int width = 0;
             int height = 0;
             for (int i = indexArray[2]; i <= indexArray[3]; i++)
+            {
                 width += rowSpan[indexArray[0] + "," + i].Width;//合并后单元格总宽度
+            }
             for (int i = indexArray[0]; i <= indexArray[1]; i++)
+            {
                 height += rowSpan[i + "," + indexArray[2]].Height;//合并后单元格总高度
+            }
             Rectangle rectBegin = rowSpan[indexArray[0] + "," + indexArray[2]];//合并第一个单元格的位置信息
             Rectangle rectEnd = rowSpan[indexArray[1] + "," + indexArray[3]];//合并最后一个单元格的位置信息
             Rectangle reBounds = new Rectangle(new Point(rectBegin.X, rectBegin.Y), new Size(width - 1, height - 1));
@@ -178,12 +203,14 @@ namespace AnyTablePrint
                     Point rtPoint = new Point(rectEnd.Right - 1, rectBegin.Top);//右边线顶部位置
                     Point rbPoint = new Point(rectEnd.Right - 1, rectEnd.Bottom - 1);//右边线底部位置
                     cellArgs.Graphics.DrawLine(gridLinePen, rtPoint, rbPoint); //右边线
-
-                    //画出文本框
-                    if (rowValue[indexArray[0] + "," + indexArray[2]] != "")
+                    using (Brush foreBrush = new SolidBrush(cellArgs.CellStyle.ForeColor))
                     {
-                        cellArgs.Graphics.DrawString(rowValue[indexArray[0] + "," + indexArray[2]], foreFont, new SolidBrush(cellArgs.CellStyle.ForeColor), reBounds, foreFormat);
-                        rowValue.Remove(indexArray[0] + "," + indexArray[2]);
+                        //画出文本框
+                        if (rowValue[indexArray[0] + "," + indexArray[2]] != "")
+                        {
+                            cellArgs.Graphics.DrawString(rowValue[indexArray[0] + "," + indexArray[2]], foreFont, foreBrush, reBounds, foreFormat);
+                            rowValue.Remove(indexArray[0] + "," + indexArray[2]);
+                        }
                     }
                 }
                 cellArgs.Handled = true;
@@ -200,8 +227,12 @@ namespace AnyTablePrint
         public static void MergeCellsBatch(DataGridView dgv, DataGridViewCellPaintingEventArgs cellArgs, Point[] pointArray, MergeDirection kind)
         {
             if (pointArray != null && pointArray.Length > 0)
+            {
                 foreach (Point point in pointArray)
+                {
                     MergeCells(dgv, cellArgs, point.X, point.Y, MergeDirection.Horizontal);
+                }
+            }
         }
         /// <summary> 
         /// 批量合并单元格（已知需要合并的单元格是连在一起的）
@@ -215,7 +246,9 @@ namespace AnyTablePrint
             if (indexArray != null && indexArray.Length > 0)
             {
                 for (int i = 0; i < indexArray.Length - 1; i++)
+                {
                     MergeCells(dgv, cellArgs, indexArray[i], indexArray[i + 1] - 1, MergeDirection.Horizontal);
+                }
                 MergeCells(dgv, cellArgs, indexArray[indexArray.Length - 1], dgv.Columns.Count - 1, MergeDirection.Horizontal);
             }
         }
