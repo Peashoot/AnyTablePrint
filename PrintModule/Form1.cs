@@ -720,12 +720,8 @@ namespace PrintModule
                 MessageBox.Show(this, "打印机未选择");
                 return;
             }
-            if (txt_Width.Text.IsEmpty() || txt_Height.Text.IsEmpty())
-            {
-                MessageBox.Show(this, "打印纸张大小未选择");
-                return;
-            }
-            PrintSetting(txt_Width.Text.ToInt32(), txt_Height.Text.ToInt32(), chk_Printer.SelectedItem.ToString());
+            PrintSetting(panel.Size.Width, panel.Size.Height, chk_Printer.SelectedItem.ToString());
+            panel.Size = new Size(txt_Width.Text.ToInt32(), txt_Height.Text.ToInt32());
             using (PrintPreviewDialog printpreviewdialog = new PrintPreviewDialog())
             {
                 printpreviewdialog.Document = printDocument;
@@ -770,25 +766,34 @@ namespace PrintModule
                 MessageBox.Show(this, "打印机未选择");
                 return;
             }
+            PrintSetting(panel.Size.Width, panel.Size.Height, chk_Printer.SelectedItem.ToString());
+            printDocument.DefaultPageSettings.Landscape = true;
+            printDocument.Print();
+        }
+        #endregion
+        #region 改变打印纸张大小
+        /// <summary>
+        /// 打印纸张大小改变
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btn_PrintSize_Click(object sender, EventArgs e)
+        {
             if (txt_Width.Text.IsEmpty() || txt_Height.Text.IsEmpty())
             {
                 MessageBox.Show(this, "打印纸张大小未选择");
                 return;
             }
-            PrintSetting(txt_Width.Text.ToInt32(), txt_Height.Text.ToInt32(), chk_Printer.SelectedItem.ToString());
-            printDocument.DefaultPageSettings.Landscape = true;
-            printDocument.Print();
+            panel.Size = new Size(txt_Width.Text.ToInt32(), txt_Height.Text.ToInt32());
         }
-        #endregion
-        #region 改变panel的大小
         /// <summary>
-        /// 当窗体大小发生变化时，Panel的大小也变化
+        /// 当panel的大小改变时，窗口的大小也改变
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void Form1_Resize(object sender, EventArgs e)
+        private void panel_Resize(object sender, EventArgs e)
         {
-            panel.Size = new Size(this.Size.Width - 185, this.Size.Height - 63);
+            this.Size = new Size(Math.Max(200, panel.Size.Width + 185), Math.Max(493, panel.Size.Height + 63));
         }
         #endregion
     }

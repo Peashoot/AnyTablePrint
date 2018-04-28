@@ -58,6 +58,7 @@
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.chk_Printer = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.btn_PrintSize = new System.Windows.Forms.Button();
             this.menuStrip.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -70,6 +71,7 @@
             this.panel.Name = "panel";
             this.panel.Size = new System.Drawing.Size(382, 430);
             this.panel.TabIndex = 0;
+            this.panel.Resize += new System.EventHandler(this.panel_Resize);
             // 
             // txt_ShowString
             // 
@@ -288,7 +290,7 @@
             this.groupBox1.Size = new System.Drawing.Size(140, 63);
             this.groupBox1.TabIndex = 13;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "要添加的图片";
+            this.groupBox1.Text = "图片、界面宽高设置";
             // 
             // groupBox2
             // 
@@ -300,7 +302,7 @@
             this.groupBox2.Size = new System.Drawing.Size(140, 83);
             this.groupBox2.TabIndex = 14;
             this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "要添加的文本";
+            this.groupBox2.Text = "输入文本属性";
             // 
             // chk_Printer
             // 
@@ -319,11 +321,22 @@
             this.label1.TabIndex = 16;
             this.label1.Text = "选择打印机：";
             // 
+            // btn_PrintSize
+            // 
+            this.btn_PrintSize.Location = new System.Drawing.Point(15, 245);
+            this.btn_PrintSize.Name = "btn_PrintSize";
+            this.btn_PrintSize.Size = new System.Drawing.Size(129, 22);
+            this.btn_PrintSize.TabIndex = 17;
+            this.btn_PrintSize.Text = "设置打印纸张大小";
+            this.btn_PrintSize.UseVisualStyleBackColor = true;
+            this.btn_PrintSize.Click += new System.EventHandler(this.btn_PrintSize_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(551, 454);
+            this.Controls.Add(this.btn_PrintSize);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.chk_Printer);
             this.Controls.Add(this.groupBox2);
@@ -339,11 +352,11 @@
             this.Controls.Add(this.btn_AddQRCode);
             this.Controls.Add(this.btn_AddLabel);
             this.Controls.Add(this.panel);
-            this.MinimumSize = new System.Drawing.Size(567, 493);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MinimumSize = new System.Drawing.Size(200, 493);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "打印预览";
             this.Load += new System.EventHandler(this.Form1_Load);
-            this.Resize += new System.EventHandler(this.Form1_Resize);
             this.menuStrip.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -385,6 +398,7 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.ComboBox chk_Printer;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button btn_PrintSize;
     }
 }
 
