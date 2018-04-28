@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
-using System.Text.RegularExpressions;
 using ZXing;
 using System.Xml;
+using System.Drawing.Printing;
 
 namespace PrintModule
 {
@@ -84,7 +84,12 @@ namespace PrintModule
             //OpenFileDialog初始化
             fileDialog.FileName = string.Empty;
             fileDialog.InitialDirectory = System.Environment.CurrentDirectory;
-            fileDialog.Filter = "图片文件|*.jpg;*.bmp;*.png;*.jpeg;*.gif";
+            List<string> list_printName = new List<string>();
+            foreach (string printerName in System.Drawing.Printing.PrinterSettings.InstalledPrinters)
+            {
+                list_printName.Add(printerName);
+            }
+            chk_Printer.Items.AddRange(list_printName.ToArray());
         }
         #endregion
         #region 选择属性
@@ -126,10 +131,17 @@ namespace PrintModule
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void numText_TextChanged(object sender, EventArgs e)
+        private void numText_KeyPress(object sender, KeyPressEventArgs e)
         {
-            Regex pattern = new Regex(@"\D");
-            (sender as TextBox).Text = pattern.Replace((sender as TextBox).Text, "");
+            //值允许数字或者是退格和del输入
+            if (!(Char.IsNumber(e.KeyChar)) && e.KeyChar != (char)8 && e.KeyChar != (char)20 && e.KeyChar != '.')
+            {
+                e.Handled = true;
+            }
+            else
+            {
+                e.Handled = false;
+            }
         }
         #endregion
         #endregion
@@ -661,6 +673,122 @@ namespace PrintModule
             {
                 panel.Controls[i].Dispose();
             }
+        }
+        #endregion
+        #region 打印页的生成
+        /// <summary>
+        /// 打印页的生成
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void printDocument_PrintPage(object sender, System.Drawing.Printing.PrintPageEventArgs e)
+        {
+            foreach (Control c in panel.Controls)
+            {
+                TagInfo info = c.Tag as TagInfo;
+                switch (info.type)
+                {
+                    case "text":
+                        e.Graphics.DrawString(info.info, c.Font, new SolidBrush(c.ForeColor), c.Location);
+                        break;
+                    case "image":
+                    case "qrcode":
+                    case "barcode":
+                        PictureBox pb = c as PictureBox;
+                        if (pb != null)
+                        {
+                            e.Graphics.DrawImage(pb.Image, pb.Location);
+                        }
+                        break;
+                    case "background":
+                        e.Graphics.FillRegion(new SolidBrush(c.BackColor), c.Region);
+                        break;
+                }
+            }
+        }
+        #endregion
+        #region 打印预览
+        /// <summary>
+        /// 打印预览
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btn_PrintPreview_Click(object sender, EventArgs e)
+        {
+            if (chk_Printer.SelectedIndex < 0)
+            {
+                MessageBox.Show(this, "打印机未选择");
+                return;
+            }
+            if (txt_Width.Text.IsEmpty() || txt_Height.Text.IsEmpty())
+            {
+                MessageBox.Show(this, "打印纸张大小未选择");
+                return;
+            }
+            PrintSetting(txt_Width.Text.ToInt32(), txt_Height.Text.ToInt32(), chk_Printer.SelectedItem.ToString());
+            using (PrintPreviewDialog printpreviewdialog = new PrintPreviewDialog())
+            {
+                printpreviewdialog.Document = printDocument;
+                printpreviewdialog.ShowDialog();
+            }
+        }
+        #endregion
+        #region 打印设置
+        /// <summary>
+        /// 打印设置
+        /// </summary>
+        /// <param name="Width"></param>
+        /// <param name="Height"></param>
+        /// <param name="PrinterName"></param>
+        public void PrintSetting(int Width, int Height, string PrinterName)
+        {
+            //设置页面大小
+            PaperSize paperSize = new PaperSize("自定义页面", Width, Height);
+            //使用这个页面设置
+            printDocument.DefaultPageSettings.PaperSize = paperSize;
+            //设置打印的时候的所使用re打印机
+            printDocument.DefaultPageSettings.PrinterSettings.PrinterName = PrinterName;
+            //逐分打印
+            printDocument.DefaultPageSettings.PrinterSettings.Collate = true;
+            //打印的分数
+            printDocument.DefaultPageSettings.PrinterSettings.Copies = 1;
+            //指定边距
+            printDocument.DefaultPageSettings.Margins.Top = 0;
+            printDocument.DefaultPageSettings.Margins.Left = 0;
+        }
+        #endregion
+        #region 打印
+        /// <summary>
+        /// 打印
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btn_Print_Click(object sender, EventArgs e)
+        {
+            if (chk_Printer.SelectedIndex < 0)
+            {
+                MessageBox.Show(this, "打印机未选择");
+                return;
+            }
+            if (txt_Width.Text.IsEmpty() || txt_Height.Text.IsEmpty())
+            {
+                MessageBox.Show(this, "打印纸张大小未选择");
+                return;
+            }
+            PrintSetting(txt_Width.Text.ToInt32(), txt_Height.Text.ToInt32(), chk_Printer.SelectedItem.ToString());
+            printDocument.DefaultPageSettings.Landscape = true;
+            printDocument.Print();
+        }
+        #endregion
+        #region 改变panel的大小
+        /// <summary>
+        /// 当窗体大小发生变化时，Panel的大小也变化
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Form1_Resize(object sender, EventArgs e)
+        {
+            panel.Size = new Size(this.Size.Width - 185, this.Size.Height - 63);
         }
         #endregion
     }
