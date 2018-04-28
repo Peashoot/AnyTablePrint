@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnyTablePrint", "AnyTablePrint\AnyTablePrint.csproj", "{FC87D48D-A3A7-4F69-98AE-31726872DC7A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrintModule", "PrintModule\PrintModule.csproj", "{5D62D062-2AA7-4A67-8C6A-F96FB6DB2756}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -13,6 +15,10 @@ Global
 		{FC87D48D-A3A7-4F69-98AE-31726872DC7A}.Debug|x86.Build.0 = Debug|x86
 		{FC87D48D-A3A7-4F69-98AE-31726872DC7A}.Release|x86.ActiveCfg = Release|x86
 		{FC87D48D-A3A7-4F69-98AE-31726872DC7A}.Release|x86.Build.0 = Release|x86
+		{5D62D062-2AA7-4A67-8C6A-F96FB6DB2756}.Debug|x86.ActiveCfg = Debug|x86
+		{5D62D062-2AA7-4A67-8C6A-F96FB6DB2756}.Debug|x86.Build.0 = Debug|x86
+		{5D62D062-2AA7-4A67-8C6A-F96FB6DB2756}.Release|x86.ActiveCfg = Release|x86
+		{5D62D062-2AA7-4A67-8C6A-F96FB6DB2756}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
