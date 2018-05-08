@@ -30,7 +30,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.num_RowsCount = new System.Windows.Forms.NumericUpDown();
@@ -126,8 +126,8 @@
             // dgv_PreviewTable
             // 
             this.dgv_PreviewTable.AllowUserToAddRows = false;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dgv_PreviewTable.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgv_PreviewTable.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
             this.dgv_PreviewTable.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dgv_PreviewTable.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgv_PreviewTable.ColumnHeadersVisible = false;
