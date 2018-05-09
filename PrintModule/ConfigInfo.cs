@@ -10,14 +10,6 @@ namespace PrintModule
     public class ConfigInfo
     {
         #region 配置参数
-        /// <summary>
-        /// 打印纸张宽度
-        /// </summary>
-        public static int PageSizeWeight;
-        /// <summary>
-        /// 打印纸张宽度
-        /// </summary>
-        public static int PageSizeHeight;
         #endregion
         #region 获取配置
         /// <summary>
@@ -25,22 +17,7 @@ namespace PrintModule
         /// </summary>
         public static void Get_ConfigInfo()
         {
-            try
-            {
-                PageSizeHeight = Convert.ToInt32(Get_ConfigValue("PageSizeHeight"));
-            }
-            catch
-            {
-                PageSizeHeight = 0;
-            }
-            try
-            {
-                PageSizeWeight = Convert.ToInt32(Get_ConfigValue("PageSizeWeight"));
-            }
-            catch
-            {
-                PageSizeWeight = 0;
-            }
+            
         }
         #endregion
         #region 获取config值

@@ -19,9 +19,30 @@ namespace PrintModule
             {
                 return Convert.ToInt32(str);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                throw e;
+                throw;
+            }
+        }
+        /// <summary>
+        /// 字符串数组转int数组
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static int[] ToInt32(this string[] str)
+        {
+            try
+            {
+                int[] ret = new int[str.Length];
+                for (int i = 0; i < str.Length; i++)
+                {
+                    ret[i] = Convert.ToInt32(str[i]);
+                }
+                return ret;
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
         /// <summary>
@@ -35,9 +56,9 @@ namespace PrintModule
             {
                 return Convert.ToDouble(str);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                throw e;
+                throw;
             }
         }
         /// <summary>
@@ -68,7 +89,7 @@ namespace PrintModule
         /// <returns></returns>
         public static bool IsEmpty(this string str)
         {
-            return string.IsNullOrEmpty(str);
+            return str == string.Empty;
         }
         /// <summary>
         /// 字符串重复叠加
@@ -87,9 +108,9 @@ namespace PrintModule
                 }
                 return strbud;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                throw e;
+                throw;
             }
         }
         /// <summary>
@@ -108,9 +129,9 @@ namespace PrintModule
                 dt = Convert.ToDateTime(str, dtFormat);
                 return dt;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                throw e;
+                throw;
             }
         }
     }
