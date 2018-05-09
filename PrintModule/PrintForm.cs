@@ -102,10 +102,12 @@ namespace PrintModule
                     panel.DrawToBitmap(panelImg, panel.ClientRectangle);
                     panelPicBox.Image = panelImg;
                     panelPicBox.Visible = true;
+                    SetButtonEnabled(false, btn_Screenshots);
                 }
                 else
                 {
                     panelPicBox.Visible = false;
+                    SetButtonEnabled(true, null);
                 }
             }
         }
@@ -260,7 +262,7 @@ namespace PrintModule
 
         private void AddLabel(Point location = new Point())
         {
-            SetEnabled(true);
+            SetPanelControlsEnabled(true);
             if (resetMode)
             {
                 labstore.Text = txt_ShowString.Text;
@@ -286,7 +288,7 @@ namespace PrintModule
                 AddControlEvent(additem);
             }
             txt_ShowString.Text = string.Empty;
-            AllButtonEnabled();
+            SetButtonEnabled(true, null);
         }
         #endregion
         #region 添加图片
@@ -471,7 +473,7 @@ namespace PrintModule
         /// <param name="img"></param>
         private void AddPictureBox(Image img, TagInfo tag, Point location = new Point())
         {
-            SetEnabled(true);
+            SetPanelControlsEnabled(true);
             if (resetMode)
             {
                 if (pbstore != null)
@@ -512,7 +514,8 @@ namespace PrintModule
                 AddControlEvent(pb);
             }
             txt_ShowString.Text = string.Empty;
-            AllButtonEnabled();
+            //AllButtonEnabled();
+            SetButtonEnabled(true, null);
         }
         #endregion
         #region 给控件添加事件
@@ -700,7 +703,7 @@ namespace PrintModule
             Label label = menuStrip.SourceControl as Label;
             PictureBox picbox = menuStrip.SourceControl as PictureBox;
             resetMode = true;
-            SetEnabled(false);
+            SetPanelControlsEnabled(false);
             if (label != null)
             {
                 label.Enabled = true;
@@ -709,7 +712,7 @@ namespace PrintModule
                 foreColor = label.ForeColor;
                 txt_ShowString.Text = label.Text;
                 backColor = label.BackColor;
-                AllButtonUnabled(btn_AddLabel);
+                SetButtonEnabled(false, btn_AddLabel);
             }
             if (picbox != null)
             {
@@ -734,7 +737,7 @@ namespace PrintModule
                             btn = btn_AddBackground;
                             break;
                     }
-                    AllButtonUnabled(btn);
+                    SetButtonEnabled(false, btn);
                     image = picbox.Image;
                     txt_ShowString.Text = tag.info;
                     backColor = picbox.BackColor;
@@ -747,7 +750,7 @@ namespace PrintModule
         /// 设置panel里所有控件的Enabled
         /// </summary>
         /// <param name="enabled"></param>
-        private void SetEnabled(bool enabled)
+        private void SetPanelControlsEnabled(bool enabled)
         {
             foreach (Control c in panel.Controls)
             {
@@ -772,40 +775,19 @@ namespace PrintModule
         #endregion
         #region 改变Enabled属性
         /// <summary>
-        /// 把除了重新设置控件对应的按钮外，全部置为不可用
+        ///  设置按钮Enabled
         /// </summary>
-        /// <param name="btn"></param>
-        private void AllButtonUnabled(Button btn)
+        /// <param name="enabled"></param>
+        /// <param name="exceptButton"></param>
+        private void SetButtonEnabled(bool enabled, Button exceptButton)
         {
-            if (resetMode)
+            foreach (Control c in this.Controls)
             {
-                foreach (Control c in Controls)
+                Button btn = c as Button;
+                if (btn != null && btn != exceptButton)
                 {
-                    if (c.Tag != null && c.Tag.ToString() == "Operate")
-                    {
-                        if (c != btn)
-                        {
-                            c.Enabled = false;
-                        }
-                    }
+                    btn.Enabled = enabled;
                 }
-            }
-        }
-        /// <summary>
-        /// 把所有按钮置为可用
-        /// </summary>
-        private void AllButtonEnabled()
-        {
-            if (resetMode)
-            {
-                foreach (Control c in Controls)
-                {
-                    if (c.Tag != null && c.Tag.ToString() == "Operate")
-                    {
-                        c.Enabled = true;
-                    }
-                }
-                resetMode = false;
             }
         }
         #endregion
@@ -1174,7 +1156,7 @@ namespace PrintModule
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void panel_Paint(object sender, PaintEventArgs e)
+        private void panel_Paint(object sender, PaintEventArgs e)
         {
             if (clipMode && isClipping)
             {
