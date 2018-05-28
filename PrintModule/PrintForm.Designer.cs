@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PrintForm));
             this.panel = new System.Windows.Forms.Panel();
             this.txt_ShowString = new System.Windows.Forms.TextBox();
             this.btn_AddLabel = new System.Windows.Forms.Button();
@@ -52,11 +53,11 @@
             this.btn_Clear = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.chk_Printer = new System.Windows.Forms.ComboBox();
+            this.cmb_Printer = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.btn_PrintSize = new System.Windows.Forms.Button();
             this.btn_Screenshots = new System.Windows.Forms.Button();
-            this.chk_PrintPaperSize = new System.Windows.Forms.ComboBox();
+            this.cmb_PrintPaperSize = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
             this.menuStrip.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -293,13 +294,13 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "输入文本属性";
             // 
-            // chk_Printer
+            // cmb_Printer
             // 
-            this.chk_Printer.FormattingEnabled = true;
-            this.chk_Printer.Location = new System.Drawing.Point(15, 215);
-            this.chk_Printer.Name = "chk_Printer";
-            this.chk_Printer.Size = new System.Drawing.Size(127, 20);
-            this.chk_Printer.TabIndex = 15;
+            this.cmb_Printer.FormattingEnabled = true;
+            this.cmb_Printer.Location = new System.Drawing.Point(15, 215);
+            this.cmb_Printer.Name = "cmb_Printer";
+            this.cmb_Printer.Size = new System.Drawing.Size(127, 20);
+            this.cmb_Printer.TabIndex = 15;
             // 
             // label1
             // 
@@ -331,13 +332,13 @@
             this.btn_Screenshots.UseVisualStyleBackColor = true;
             this.btn_Screenshots.Click += new System.EventHandler(this.btn_Screenshots_Click);
             // 
-            // chk_PrintPaperSize
+            // cmb_PrintPaperSize
             // 
-            this.chk_PrintPaperSize.FormattingEnabled = true;
-            this.chk_PrintPaperSize.Location = new System.Drawing.Point(15, 173);
-            this.chk_PrintPaperSize.Name = "chk_PrintPaperSize";
-            this.chk_PrintPaperSize.Size = new System.Drawing.Size(126, 20);
-            this.chk_PrintPaperSize.TabIndex = 18;
+            this.cmb_PrintPaperSize.FormattingEnabled = true;
+            this.cmb_PrintPaperSize.Location = new System.Drawing.Point(15, 173);
+            this.cmb_PrintPaperSize.Name = "cmb_PrintPaperSize";
+            this.cmb_PrintPaperSize.Size = new System.Drawing.Size(126, 20);
+            this.cmb_PrintPaperSize.TabIndex = 18;
             // 
             // label2
             // 
@@ -353,11 +354,11 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(551, 451);
-            this.Controls.Add(this.chk_PrintPaperSize);
+            this.Controls.Add(this.cmb_PrintPaperSize);
             this.Controls.Add(this.btn_PrintSize);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.chk_Printer);
+            this.Controls.Add(this.cmb_Printer);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btn_Screenshots);
@@ -373,6 +374,7 @@
             this.Controls.Add(this.btn_AddLabel);
             this.Controls.Add(this.panel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(200, 480);
             this.Name = "PrintForm";
             this.Text = "打印预览";
@@ -412,11 +414,11 @@
         private System.Windows.Forms.Button btn_Clear;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.ComboBox chk_Printer;
+        private System.Windows.Forms.ComboBox cmb_Printer;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btn_PrintSize;
         private System.Windows.Forms.Button btn_Screenshots;
-        private System.Windows.Forms.ComboBox chk_PrintPaperSize;
+        private System.Windows.Forms.ComboBox cmb_PrintPaperSize;
         private System.Windows.Forms.Label label2;
     }
 }

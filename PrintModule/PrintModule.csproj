@@ -34,6 +34,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>timg.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -54,6 +57,7 @@
     <Compile Include="ConfigInfo.cs" />
     <Compile Include="ExportInfo.cs" />
     <Compile Include="Extend.cs" />
+    <Compile Include="LoadResourceDll.cs" />
     <Compile Include="PrintForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -88,6 +92,13 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="timg.ico" />
+    <EmbeddedResource Include="zxing.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="bin\Debug\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

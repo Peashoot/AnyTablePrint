@@ -103,6 +103,8 @@ namespace PrintModule
                     panelPicBox.Image = panelImg;
                     panelPicBox.Visible = true;
                     SetButtonEnabled(false, btn_Screenshots);
+                    btn_FontDialog.Enabled = false;
+                    btn_BackColor.Enabled = false;
                 }
                 else
                 {
@@ -181,15 +183,16 @@ namespace PrintModule
             {
                 list_printName.Add(printerName);
             }
-            chk_Printer.Items.AddRange(list_printName.ToArray());
-            IEnumerator iterator = new PrintDocument().PrinterSettings.PaperSizes.GetEnumerator();
+            cmb_Printer.Items.AddRange(list_printName.ToArray());
+            cmb_Printer.SelectedIndex = 0;
+            IEnumerator iterator = printDocument.PrinterSettings.PaperSizes.GetEnumerator();
             while (iterator.MoveNext())
             {
                 PaperSize current = iterator.Current as PaperSize;
-                chk_PrintPaperSize.Items.Add(current);
+                cmb_PrintPaperSize.Items.Add(current);
             }
-            chk_PrintPaperSize.DisplayMember = "PaperName";
-            chk_PrintPaperSize.SelectedIndex = chk_PrintPaperSize.Items.Count - 1;
+            cmb_PrintPaperSize.DisplayMember = "PaperName";
+            cmb_PrintPaperSize.SelectedIndex = cmb_PrintPaperSize.Items.Count - 1;
         }
         #endregion
         #region 选择属性
@@ -804,7 +807,7 @@ namespace PrintModule
             xmldoc.AppendChild(xmlSM);
             XmlElement root = xmldoc.CreateElement("", "Root", "");
             xmldoc.AppendChild(root);
-
+            //把控件信息添加到xml信息中
             foreach (Control c in panel.Controls)
             {
                 ExportInfo exportinfo = new ExportInfo();
@@ -816,6 +819,21 @@ namespace PrintModule
                 exportinfo.taginfo = c.Tag as TagInfo;
                 exportinfo.AddIntoXMLDocument(ref xmldoc);
             }
+            //把纸张信息添加到xml信息中
+            XmlElement parent = xmldoc.CreateElement("PrintPaper");
+            XmlElement child = xmldoc.CreateElement("PaperSizeName");
+            child.InnerText = (cmb_PrintPaperSize.SelectedItem as PaperSize).PaperName;
+            parent.AppendChild(child);
+            child = xmldoc.CreateElement("PaperSize");
+            XmlElement grandchild = xmldoc.CreateElement("Width");
+            grandchild.InnerText = panel.Size.Width.ToString();
+            child.AppendChild(grandchild);
+            grandchild = xmldoc.CreateElement("Height");
+            grandchild.InnerText = panel.Size.Height.ToString();
+            child.AppendChild(grandchild);
+            parent.AppendChild(child);
+            root.AppendChild(parent);
+            //生成的xml保存本地
             using (SaveFileDialog saveFileDialog = new SaveFileDialog())
             {
                 saveFileDialog.Filter = "XML文件|*.xml";
@@ -827,11 +845,11 @@ namespace PrintModule
                         using (FileStream fs = (FileStream)saveFileDialog.OpenFile())
                         {
                             xmldoc.Save(fs);
+                            MessageBox.Show("导出成功");
                         }
                     }
                 }
             }
-            MessageBox.Show("导出成功");
         }
         #endregion
         #region 从XML导入信息
@@ -857,12 +875,27 @@ namespace PrintModule
                 List<ExportInfo> exportlist = new List<ExportInfo>();
                 foreach (XmlNode node in root.ChildNodes)
                 {
-                    exportlist.Add(ExportInfo.GetInfoFromXML(((XmlElement)node)));
+                    if (node.Name != "PrintPaper")
+                    {
+                        exportlist.Add(ExportInfo.GetInfoFromXML(((XmlElement)node)));
+                    }
+                    else
+                    {
+                        XmlNode child = ((XmlElement)node).GetElementsByTagName("PaperSizeName").Item(0);
+                        cmb_PrintPaperSize.Text = child.InnerText;
+                        child = ((XmlElement)node).GetElementsByTagName("PaperSize").Item(0);
+                        XmlNode grandchild = ((XmlElement)child).GetElementsByTagName("Width").Item(0);
+                        txt_Width.Text = grandchild.InnerText;
+                        grandchild = ((XmlElement)child).GetElementsByTagName("Height").Item(0);
+                        txt_Height.Text = grandchild.InnerText;
+                        panel.Size = new Size(txt_Width.Text.ToInt32(), txt_Height.Text.ToInt32());
+                    }
                 }
                 while (panel.Controls.Count > 0)
                 {
                     panel.Controls[0].Dispose();
                 }
+                //添加控件信息
                 foreach (ExportInfo exportinfo in exportlist)
                 {
                     txt_ShowString.Text = exportinfo.taginfo.info;
@@ -915,6 +948,7 @@ namespace PrintModule
             }
         }
         #endregion
+        #region 打印
         #region 打印页的生成
         /// <summary>
         /// 打印页的生成
@@ -955,16 +989,16 @@ namespace PrintModule
         /// <param name="e"></param>
         private void btn_PrintPreview_Click(object sender, EventArgs e)
         {
-            if (chk_Printer.SelectedIndex < 0)
+            if (cmb_Printer.SelectedIndex < 0)
             {
                 MessageBox.Show(this, "打印机未选择");
                 return;
             }
-            PrintSetting(panel.Size.Width, panel.Size.Height, chk_Printer.SelectedItem.ToString());
-            if (chk_PrintPaperSize.SelectedIndex != chk_PrintPaperSize.Items.Count - 1)
+            PrintSetting(panel.Size.Width, panel.Size.Height, cmb_Printer.SelectedItem.ToString());
+            if (cmb_PrintPaperSize.SelectedIndex != cmb_PrintPaperSize.Items.Count - 1)
             {
-                txt_Width.Text = (chk_PrintPaperSize.SelectedItem as PaperSize).Width.ToString();
-                txt_Height.Text = (chk_PrintPaperSize.SelectedItem as PaperSize).Height.ToString();
+                txt_Width.Text = (cmb_PrintPaperSize.SelectedItem as PaperSize).Width.ToString();
+                txt_Height.Text = (cmb_PrintPaperSize.SelectedItem as PaperSize).Height.ToString();
             }
             panel.Size = new Size(txt_Width.Text.ToInt32(), txt_Height.Text.ToInt32());
             using (PrintPreviewDialog printpreviewdialog = new PrintPreviewDialog())
@@ -989,9 +1023,9 @@ namespace PrintModule
             printDocument.DefaultPageSettings.PaperSize = paperSize;
             //设置打印的时候的所使用re打印机
             printDocument.DefaultPageSettings.PrinterSettings.PrinterName = PrinterName;
-            //逐分打印
+            //逐份打印
             printDocument.DefaultPageSettings.PrinterSettings.Collate = true;
-            //打印的分数
+            //打印的份数
             printDocument.DefaultPageSettings.PrinterSettings.Copies = 1;
             //指定边距
             printDocument.DefaultPageSettings.Margins.Top = 0;
@@ -1006,12 +1040,12 @@ namespace PrintModule
         /// <param name="e"></param>
         private void btn_Print_Click(object sender, EventArgs e)
         {
-            if (chk_Printer.SelectedIndex < 0)
+            if (cmb_Printer.SelectedIndex < 0)
             {
                 MessageBox.Show(this, "打印机未选择");
                 return;
             }
-            PrintSetting(panel.Size.Width, panel.Size.Height, chk_Printer.SelectedItem.ToString());
+            PrintSetting(panel.Size.Width, panel.Size.Height, cmb_Printer.SelectedItem.ToString());
             printDocument.DefaultPageSettings.Landscape = true;
             printDocument.Print();
         }
@@ -1029,10 +1063,10 @@ namespace PrintModule
                 MessageBox.Show(this, "打印纸张大小未选择");
                 return;
             }
-            if (chk_PrintPaperSize.SelectedIndex != chk_PrintPaperSize.Items.Count - 1)
+            if (cmb_PrintPaperSize.SelectedIndex != cmb_PrintPaperSize.Items.Count - 1)
             {
-                txt_Width.Text = (chk_PrintPaperSize.SelectedItem as PaperSize).Width.ToString();
-                txt_Height.Text = (chk_PrintPaperSize.SelectedItem as PaperSize).Height.ToString();
+                txt_Width.Text = (cmb_PrintPaperSize.SelectedItem as PaperSize).Width.ToString();
+                txt_Height.Text = (cmb_PrintPaperSize.SelectedItem as PaperSize).Height.ToString();
             }
             panel.Size = new Size(txt_Width.Text.ToInt32(), txt_Height.Text.ToInt32());
         }
@@ -1045,6 +1079,7 @@ namespace PrintModule
         {
             this.Size = new Size(Math.Max(200, panel.Size.Width + 185), Math.Max(480, panel.Size.Height + 63));
         }
+        #endregion
         #endregion
         #region 把Panel截取放入剪切板中并可选地保存为图片
         /// <summary>
@@ -1065,11 +1100,11 @@ namespace PrintModule
         {
             if (clipMode)
             {
-                PictureBox p = sender as PictureBox;
-                if (p != null)
+                PictureBox pb = sender as PictureBox;
+                if (pb != null)
                 {
                     isClipping = true;
-                    beforeLoc = p.PointToClient(MousePosition);
+                    beforeLoc = pb.PointToClient(MousePosition);
                     clippingRect.Location = MousePosition;
                     clippingRect.Width = 1;
                     clippingRect.Height = 1;
@@ -1083,21 +1118,23 @@ namespace PrintModule
         /// <param name="e"></param>
         private void panel_MouseMove(object sender, MouseEventArgs e)
         {
-            PictureBox p = sender as PictureBox;
-            if (p != null)
+            PictureBox pb = sender as PictureBox;
+            if (pb != null)
             {
-                afterLoc = p.PointToClient(MousePosition);
-                clippingRect.Width = Math.Abs(afterLoc.X - beforeLoc.X);
-                clippingRect.Height = Math.Abs(afterLoc.Y - beforeLoc.Y);
+                afterLoc = pb.PointToClient(MousePosition);
+                afterLoc.X = afterLoc.X < 0 ? 0 : afterLoc.X >= panel.Width ? panel.Width - 1 : afterLoc.X;
+                afterLoc.Y = afterLoc.Y < 0 ? 0 : afterLoc.Y >= panel.Width ? panel.Width - 1 : afterLoc.Y;
+                clippingRect.Width = Math.Min(Math.Abs(afterLoc.X - beforeLoc.X), panel.Width - clippingRect.Location.X);
+                clippingRect.Height = Math.Min(Math.Abs(afterLoc.Y - beforeLoc.Y), panel.Height - clippingRect.Location.Y);
                 if (afterLoc.X < clippingRect.Location.X)
                 {
-                    clippingRect.Location = new Point(afterLoc.X, clippingRect.Location.Y);
+                    clippingRect.Location = new Point(Math.Max(Math.Min(afterLoc.X, panel.Width - 1), 0), Math.Max(Math.Min(clippingRect.Location.Y, panel.Height - 1), 0));
                 }
                 if (afterLoc.Y < clippingRect.Location.Y)
                 {
-                    clippingRect.Location = new Point(clippingRect.Location.X, afterLoc.Y);
+                    clippingRect.Location = new Point(Math.Max(Math.Min(clippingRect.Location.X, panel.Width - 1), 0), Math.Max(Math.Min(afterLoc.Y, panel.Height - 1), 0));
                 }
-                p.Refresh();
+                pb.Refresh();
             }
         }
         /// <summary>
@@ -1110,10 +1147,10 @@ namespace PrintModule
             if (clipMode && isClipping)
             {
                 isClipping = false;
-                PictureBox p = sender as PictureBox;
-                if (p != null)
+                PictureBox pb = sender as PictureBox;
+                if (pb != null)
                 {
-                    Bitmap clipImg = (Bitmap)p.Image;
+                    Bitmap clipImg = (Bitmap)pb.Image;
                     clipImg = clipImg.Clone(clippingRect, clipImg.PixelFormat);
                     txt_ShowString.Text = clippingRect.Location.ToString() + clippingRect.Size.ToString();
                     Clipboard.SetImage(clipImg);
@@ -1123,30 +1160,28 @@ namespace PrintModule
                         {
                             savefileDialog.Filter = "JPeg格式图片|*.jpg|Bitmap格式图片|*.bmp|Gif格式图片|*.gif";
                             savefileDialog.Title = "选择保存的路径：";
-                            if (DialogResult.OK == savefileDialog.ShowDialog())
+                            if (DialogResult.OK == savefileDialog.ShowDialog() && !savefileDialog.FileName.IsEmpty())
                             {
-                                if (!savefileDialog.FileName.IsEmpty())
+                                using (FileStream fs = (FileStream)savefileDialog.OpenFile())
                                 {
-                                    using (FileStream fs = (FileStream)savefileDialog.OpenFile())
+                                    switch (savefileDialog.FilterIndex)
                                     {
-                                        switch (savefileDialog.FilterIndex)
-                                        {
-                                            case 1:
-                                                clipImg.Save(fs, System.Drawing.Imaging.ImageFormat.Jpeg);
-                                                break;
-                                            case 2:
-                                                clipImg.Save(fs, System.Drawing.Imaging.ImageFormat.Bmp);
-                                                break;
-                                            case 3:
-                                                clipImg.Save(fs, System.Drawing.Imaging.ImageFormat.Gif);
-                                                break;
-                                        }
+                                        case 1:
+                                            clipImg.Save(fs, System.Drawing.Imaging.ImageFormat.Jpeg);
+                                            break;
+                                        case 2:
+                                            clipImg.Save(fs, System.Drawing.Imaging.ImageFormat.Bmp);
+                                            break;
+                                        case 3:
+                                            clipImg.Save(fs, System.Drawing.Imaging.ImageFormat.Gif);
+                                            break;
                                     }
                                 }
                             }
                         }
                     }
-                    p.Refresh();
+                    clipImg.Dispose();
+                    pb.Refresh();
                 }
                 clipMode = false;
             }
@@ -1161,8 +1196,102 @@ namespace PrintModule
             if (clipMode && isClipping)
             {
                 e.Graphics.DrawRectangle(new Pen(new SolidBrush(Color.Red)), clippingRect);
+                //e.Graphics.DrawEllipse(new Pen(new SolidBrush(Color.Red)), clippingRect);
             }
         }
+        #region 截椭圆图片
+        /// <summary>
+        /// 截椭圆图片
+        /// </summary>
+        /// <param name="bmp"></param>
+        /// <returns></returns>
+        private Bitmap WayOne(Bitmap bmp)
+        {
+            Bitmap ret = new Bitmap(bmp.Width, bmp.Height);
+            using (Graphics g = Graphics.FromImage(ret))
+            {
+                g.FillEllipse(new TextureBrush(bmp), 0, 0, bmp.Width, bmp.Height);
+            }
+            return ret;
+        }
+        /// <summary>
+        /// 截椭圆图片
+        /// </summary>
+        /// <param name="bmp"></param>
+        /// <returns></returns>
+        private Bitmap WayTwo(Bitmap bmp)
+        {
+            Bitmap ret = new Bitmap(bmp.Width, bmp.Height);
+            using (Graphics g = Graphics.FromImage(ret))
+            {
+                g.DrawImage(bmp, 0, 0, ret.Width, ret.Height);
+                int r = Math.Min(ret.Width, ret.Height) / 2;
+                PointF c = new PointF(ret.Width / 2.0F, ret.Height / 2.0F);
+                for (int h = 0; h < ret.Height; h++)
+                {
+                    for (int w = 0; w < ret.Width; w++)
+                    {
+                        if ((int)Math.Pow(r, 2) < ((int)Math.Pow(w * 1.0 - c.X, 2) + (int)Math.Pow(h * 1.0 - c.Y, 2)))
+                        {
+                            ret.SetPixel(w, h, Color.Transparent);
+                        }
+                    }
+                }
+            }
+            return ret;
+        }
+        /// <summary>
+        /// 截椭圆图片
+        /// </summary>
+        /// <param name="bmp"></param>
+        /// <returns></returns>
+        private Bitmap WaySOne(Bitmap bmp)
+        {
+            Bitmap ret = new Bitmap(bmp.Width, bmp.Height);
+            using (Graphics g = Graphics.FromImage(ret))
+            {
+                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                using (System.Drawing.Drawing2D.GraphicsPath p = new System.Drawing.Drawing2D.GraphicsPath(System.Drawing.Drawing2D.FillMode.Alternate))
+                {
+                    p.AddEllipse(0, 0, bmp.Width, bmp.Height);
+                    g.FillPath(new TextureBrush(bmp), p);
+                }
+                //g.FillEllipse(new TextureBrush(bmp), 0, 0, bmp.Width, bmp.Height);
+            }
+            return ret;
+        }
+        /// <summary>
+        /// 截椭圆图片
+        /// </summary>
+        /// <param name="bmp"></param>
+        /// <returns></returns>
+        private Bitmap WaySTwo(Bitmap bmp)
+        {
+            Bitmap ret = new Bitmap(bmp.Width, bmp.Height);
+            using (Graphics g = Graphics.FromImage(ret))
+            {
+                g.DrawImage(bmp, 0, 0, ret.Width, ret.Height);
+                int r = Math.Min(ret.Width, ret.Height) / 2;
+                PointF c = new PointF(ret.Width / 2.0F, ret.Height / 2.0F);
+                for (int h = 0; h < ret.Height; h++)
+                {
+                    for (int w = 0; w < ret.Width; w++)
+                    {
+                        if ((int)Math.Pow(r, 2) < ((int)Math.Pow(w * 1.0 - c.X, 2) + (int)Math.Pow(h * 1.0 - c.Y, 2)))
+                        {
+                            ret.SetPixel(w, h, Color.Transparent);
+                        }
+                    }
+                }
+                //画背景色圆
+                using (Pen p = new Pen(System.Drawing.SystemColors.Control))
+                {
+                    g.DrawEllipse(p, 0, 0, ret.Width, ret.Height);
+                }
+            }
+            return ret;
+        }
+        #endregion
         #endregion
     }
 }
