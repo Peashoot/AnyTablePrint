@@ -59,9 +59,12 @@
             this.btn_Screenshots = new System.Windows.Forms.Button();
             this.cmb_PrintPaperSize = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.chk_Landscape = new System.Windows.Forms.CheckBox();
+            this.num_Brightness = new System.Windows.Forms.NumericUpDown();
             this.menuStrip.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.num_Brightness)).BeginInit();
             this.SuspendLayout();
             // 
             // panel
@@ -82,7 +85,7 @@
             // 
             // btn_AddLabel
             // 
-            this.btn_AddLabel.Location = new System.Drawing.Point(14, 329);
+            this.btn_AddLabel.Location = new System.Drawing.Point(13, 329);
             this.btn_AddLabel.Name = "btn_AddLabel";
             this.btn_AddLabel.Size = new System.Drawing.Size(64, 22);
             this.btn_AddLabel.TabIndex = 3;
@@ -125,7 +128,7 @@
             // 
             // btn_ExportInfo
             // 
-            this.btn_ExportInfo.Location = new System.Drawing.Point(14, 358);
+            this.btn_ExportInfo.Location = new System.Drawing.Point(13, 358);
             this.btn_ExportInfo.Name = "btn_ExportInfo";
             this.btn_ExportInfo.Size = new System.Drawing.Size(64, 22);
             this.btn_ExportInfo.TabIndex = 6;
@@ -136,7 +139,7 @@
             // 
             // btn_PrintPreview
             // 
-            this.btn_PrintPreview.Location = new System.Drawing.Point(39, 386);
+            this.btn_PrintPreview.Location = new System.Drawing.Point(60, 386);
             this.btn_PrintPreview.Name = "btn_PrintPreview";
             this.btn_PrintPreview.Size = new System.Drawing.Size(83, 22);
             this.btn_PrintPreview.TabIndex = 6;
@@ -148,7 +151,7 @@
             // btn_Print
             // 
             this.btn_Print.Cursor = System.Windows.Forms.Cursors.Default;
-            this.btn_Print.Location = new System.Drawing.Point(57, 414);
+            this.btn_Print.Location = new System.Drawing.Point(56, 414);
             this.btn_Print.Name = "btn_Print";
             this.btn_Print.Size = new System.Drawing.Size(44, 22);
             this.btn_Print.TabIndex = 6;
@@ -205,7 +208,7 @@
             // 
             // btn_AddBackground
             // 
-            this.btn_AddBackground.Location = new System.Drawing.Point(80, 329);
+            this.btn_AddBackground.Location = new System.Drawing.Point(79, 329);
             this.btn_AddBackground.Name = "btn_AddBackground";
             this.btn_AddBackground.Size = new System.Drawing.Size(64, 22);
             this.btn_AddBackground.TabIndex = 3;
@@ -216,7 +219,7 @@
             // 
             // btn_AddQRCode
             // 
-            this.btn_AddQRCode.Location = new System.Drawing.Point(14, 301);
+            this.btn_AddQRCode.Location = new System.Drawing.Point(13, 301);
             this.btn_AddQRCode.Name = "btn_AddQRCode";
             this.btn_AddQRCode.Size = new System.Drawing.Size(64, 22);
             this.btn_AddQRCode.TabIndex = 3;
@@ -227,7 +230,7 @@
             // 
             // btn_AddBarcode
             // 
-            this.btn_AddBarcode.Location = new System.Drawing.Point(80, 301);
+            this.btn_AddBarcode.Location = new System.Drawing.Point(79, 301);
             this.btn_AddBarcode.Name = "btn_AddBarcode";
             this.btn_AddBarcode.Size = new System.Drawing.Size(64, 22);
             this.btn_AddBarcode.TabIndex = 3;
@@ -238,7 +241,7 @@
             // 
             // btn_AddImage
             // 
-            this.btn_AddImage.Location = new System.Drawing.Point(40, 273);
+            this.btn_AddImage.Location = new System.Drawing.Point(61, 273);
             this.btn_AddImage.Name = "btn_AddImage";
             this.btn_AddImage.Size = new System.Drawing.Size(83, 22);
             this.btn_AddImage.TabIndex = 6;
@@ -249,7 +252,7 @@
             // 
             // btn_ImportInfo
             // 
-            this.btn_ImportInfo.Location = new System.Drawing.Point(80, 358);
+            this.btn_ImportInfo.Location = new System.Drawing.Point(79, 358);
             this.btn_ImportInfo.Name = "btn_ImportInfo";
             this.btn_ImportInfo.Size = new System.Drawing.Size(64, 22);
             this.btn_ImportInfo.TabIndex = 6;
@@ -261,7 +264,7 @@
             // btn_Clear
             // 
             this.btn_Clear.Cursor = System.Windows.Forms.Cursors.Default;
-            this.btn_Clear.Location = new System.Drawing.Point(12, 414);
+            this.btn_Clear.Location = new System.Drawing.Point(11, 414);
             this.btn_Clear.Name = "btn_Clear";
             this.btn_Clear.Size = new System.Drawing.Size(44, 22);
             this.btn_Clear.TabIndex = 10;
@@ -301,6 +304,7 @@
             this.cmb_Printer.Name = "cmb_Printer";
             this.cmb_Printer.Size = new System.Drawing.Size(127, 20);
             this.cmb_Printer.TabIndex = 15;
+            this.cmb_Printer.SelectedIndexChanged += new System.EventHandler(this.cmb_Printer_SelectedIndexChanged);
             // 
             // label1
             // 
@@ -315,7 +319,7 @@
             // 
             this.btn_PrintSize.Location = new System.Drawing.Point(15, 245);
             this.btn_PrintSize.Name = "btn_PrintSize";
-            this.btn_PrintSize.Size = new System.Drawing.Size(129, 22);
+            this.btn_PrintSize.Size = new System.Drawing.Size(128, 22);
             this.btn_PrintSize.TabIndex = 17;
             this.btn_PrintSize.Text = "设置打印纸张大小";
             this.btn_PrintSize.UseVisualStyleBackColor = true;
@@ -324,7 +328,7 @@
             // btn_Screenshots
             // 
             this.btn_Screenshots.Cursor = System.Windows.Forms.Cursors.Default;
-            this.btn_Screenshots.Location = new System.Drawing.Point(102, 414);
+            this.btn_Screenshots.Location = new System.Drawing.Point(101, 414);
             this.btn_Screenshots.Name = "btn_Screenshots";
             this.btn_Screenshots.Size = new System.Drawing.Size(44, 22);
             this.btn_Screenshots.TabIndex = 10;
@@ -339,6 +343,7 @@
             this.cmb_PrintPaperSize.Name = "cmb_PrintPaperSize";
             this.cmb_PrintPaperSize.Size = new System.Drawing.Size(126, 20);
             this.cmb_PrintPaperSize.TabIndex = 18;
+            this.cmb_PrintPaperSize.SelectedIndexChanged += new System.EventHandler(this.cmb_PrintPaperSize_SelectedIndexChanged);
             // 
             // label2
             // 
@@ -349,11 +354,34 @@
             this.label2.TabIndex = 16;
             this.label2.Text = "选择打印纸张大小：";
             // 
+            // chk_Landscape
+            // 
+            this.chk_Landscape.AutoSize = true;
+            this.chk_Landscape.Location = new System.Drawing.Point(15, 390);
+            this.chk_Landscape.Name = "chk_Landscape";
+            this.chk_Landscape.Size = new System.Drawing.Size(48, 16);
+            this.chk_Landscape.TabIndex = 19;
+            this.chk_Landscape.Text = "横向";
+            this.chk_Landscape.UseVisualStyleBackColor = true;
+            // 
+            // num_Brightness
+            // 
+            this.num_Brightness.Location = new System.Drawing.Point(15, 273);
+            this.num_Brightness.Name = "num_Brightness";
+            this.num_Brightness.Size = new System.Drawing.Size(43, 21);
+            this.num_Brightness.TabIndex = 20;
+            this.num_Brightness.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            // 
             // PrintForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(551, 451);
+            this.Controls.Add(this.num_Brightness);
             this.Controls.Add(this.cmb_PrintPaperSize);
             this.Controls.Add(this.btn_PrintSize);
             this.Controls.Add(this.label2);
@@ -373,10 +401,12 @@
             this.Controls.Add(this.btn_AddQRCode);
             this.Controls.Add(this.btn_AddLabel);
             this.Controls.Add(this.panel);
+            this.Controls.Add(this.chk_Landscape);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(200, 480);
             this.Name = "PrintForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "打印预览";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.menuStrip.ResumeLayout(false);
@@ -384,6 +414,7 @@
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.num_Brightness)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -420,6 +451,8 @@
         private System.Windows.Forms.Button btn_Screenshots;
         private System.Windows.Forms.ComboBox cmb_PrintPaperSize;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.CheckBox chk_Landscape;
+        private System.Windows.Forms.NumericUpDown num_Brightness;
     }
 }
 

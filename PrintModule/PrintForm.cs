@@ -185,14 +185,6 @@ namespace PrintModule
             }
             cmb_Printer.Items.AddRange(list_printName.ToArray());
             cmb_Printer.SelectedIndex = 0;
-            IEnumerator iterator = printDocument.PrinterSettings.PaperSizes.GetEnumerator();
-            while (iterator.MoveNext())
-            {
-                PaperSize current = iterator.Current as PaperSize;
-                cmb_PrintPaperSize.Items.Add(current);
-            }
-            cmb_PrintPaperSize.DisplayMember = "PaperName";
-            cmb_PrintPaperSize.SelectedIndex = cmb_PrintPaperSize.Items.Count - 1;
         }
         #endregion
         #region 选择属性
@@ -995,6 +987,7 @@ namespace PrintModule
                 return;
             }
             PrintSetting(panel.Size.Width, panel.Size.Height, cmb_Printer.SelectedItem.ToString());
+            printDocument.DefaultPageSettings.Landscape = chk_Landscape.Checked;
             if (cmb_PrintPaperSize.SelectedIndex != cmb_PrintPaperSize.Items.Count - 1)
             {
                 txt_Width.Text = (cmb_PrintPaperSize.SelectedItem as PaperSize).Width.ToString();
@@ -1046,7 +1039,7 @@ namespace PrintModule
                 return;
             }
             PrintSetting(panel.Size.Width, panel.Size.Height, cmb_Printer.SelectedItem.ToString());
-            printDocument.DefaultPageSettings.Landscape = true;
+            printDocument.DefaultPageSettings.Landscape = chk_Landscape.Checked;
             printDocument.Print();
         }
         #endregion
@@ -1292,6 +1285,36 @@ namespace PrintModule
             return ret;
         }
         #endregion
+        #endregion
+        #region 更改打印机或打印纸张
+        /// <summary>
+        /// 切换打印机时更改打印机支持的纸张大小
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void cmb_Printer_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            cmb_PrintPaperSize.Items.Clear();
+            printDocument.DefaultPageSettings.PrinterSettings.PrinterName = cmb_Printer.Text;
+            IEnumerator iterator = printDocument.PrinterSettings.PaperSizes.GetEnumerator();
+            while (iterator.MoveNext())
+            {
+                PaperSize current = iterator.Current as PaperSize;
+                cmb_PrintPaperSize.Items.Add(current);
+            }
+            cmb_PrintPaperSize.DisplayMember = "PaperName";
+            cmb_PrintPaperSize.SelectedIndex = cmb_PrintPaperSize.Items.Count - 1;
+        }
+        /// <summary>
+        /// 切换纸张大小时将纸张大小显示在textbox中
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void cmb_PrintPaperSize_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            txt_Width.Text = (cmb_PrintPaperSize.SelectedItem as PaperSize).Width.ToString();
+            txt_Height.Text = (cmb_PrintPaperSize.SelectedItem as PaperSize).Height.ToString();
+        }
         #endregion
     }
 }
