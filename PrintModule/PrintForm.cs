@@ -97,6 +97,7 @@ namespace PrintModule
                 _clipmode = value;
                 if (value)
                 {
+                    panelPicBox.BackColor = Color.Transparent;
                     panelPicBox.Size = panel.Size;
                     Bitmap panelImg = new Bitmap(panel.Width, panel.Height);
                     panel.DrawToBitmap(panelImg, panel.ClientRectangle);
@@ -267,6 +268,7 @@ namespace PrintModule
                 labstore.BackColor = backColor;
                 labstore.BringToFront();
                 labstore.Tag = new TagInfo("text", txt_ShowString.Text.Trim());
+                resetMode = false;
             }
             else
             {
@@ -486,6 +488,7 @@ namespace PrintModule
                     pbstore.Size = new Size(txt_Width.Text.ToInt32(), txt_Height.Text.ToInt32());
                     pbstore.BackColor = backColor;
                     pbstore.Tag = tag;
+                    resetMode = false;
                 }
             }
             else
