@@ -57,11 +57,11 @@ namespace PrintModule
                 child = xmldoc.CreateElement("Taginfo");
 
                 grandchild = xmldoc.CreateElement("Type");
-                grandchild.InnerText = this.taginfo.type;
+                grandchild.InnerText = this.taginfo.Type;
                 child.AppendChild(grandchild);
 
                 grandchild = xmldoc.CreateElement("Info");
-                grandchild.InnerText = this.taginfo.info;
+                grandchild.InnerText = this.taginfo.Info;
                 child.AppendChild(grandchild);
 
                 parent.AppendChild(child);
@@ -130,7 +130,7 @@ namespace PrintModule
         /// </summary>
         /// <param name="parent"></param>
         /// <returns></returns>
-        public static ExportInfo GetInfoFromXML(XmlElement parent)
+        public ExportInfo GetInfoFromXML(XmlElement parent)
         {
             ExportInfo retinfo = new ExportInfo();
             XmlElement child, grandchild;
@@ -138,9 +138,9 @@ namespace PrintModule
             child = (XmlElement)parent.GetElementsByTagName("Taginfo").Item(0);
 
             grandchild = (XmlElement)child.GetElementsByTagName("Type").Item(0);
-            retinfo.taginfo.type = grandchild.InnerText;
+            retinfo.taginfo.Type = grandchild.InnerText;
             grandchild = (XmlElement)child.GetElementsByTagName("Info").Item(0);
-            retinfo.taginfo.info = grandchild.InnerText;
+            retinfo.taginfo.Info = grandchild.InnerText;
 
             /**********************************location*******************************/
             child = (XmlElement)parent.GetElementsByTagName("Location").Item(0);

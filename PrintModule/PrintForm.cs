@@ -720,7 +720,7 @@ namespace PrintModule
                 TagInfo tag = picbox.Tag as TagInfo;
                 if (tag != null)
                 {
-                    switch (tag.type)
+                    switch (tag.Type)
                     {
                         case "image":
                             btn = btn_AddImage;
@@ -737,7 +737,7 @@ namespace PrintModule
                     }
                     SetButtonEnabled(false, btn);
                     image = picbox.Image;
-                    txt_ShowString.Text = tag.info;
+                    txt_ShowString.Text = tag.Info;
                     backColor = picbox.BackColor;
                     txt_Width.Text = picbox.Width.ToString();
                     txt_Height.Text = picbox.Height.ToString();
@@ -872,7 +872,7 @@ namespace PrintModule
                 {
                     if (node.Name != "PrintPaper")
                     {
-                        exportlist.Add(ExportInfo.GetInfoFromXML(((XmlElement)node)));
+                        exportlist.Add(new ExportInfo().GetInfoFromXML(((XmlElement)node)));
                     }
                     else
                     {
@@ -893,19 +893,19 @@ namespace PrintModule
                 //添加控件信息
                 foreach (ExportInfo exportinfo in exportlist)
                 {
-                    txt_ShowString.Text = exportinfo.taginfo.info;
+                    txt_ShowString.Text = exportinfo.taginfo.Info;
                     txt_Width.Text = exportinfo.size.Width.ToString();
                     txt_Height.Text = exportinfo.size.Height.ToString();
                     foreColor = exportinfo.foreColor;
                     foreFont = exportinfo.foreFont;
                     backColor = exportinfo.backColor;
-                    switch (exportinfo.taginfo.type)
+                    switch (exportinfo.taginfo.Type)
                     {
                         case "text":
                             AddLabel(exportinfo.location);
                             break;
                         case "image":
-                            image = Image.FromFile(exportinfo.taginfo.info);
+                            image = Image.FromFile(exportinfo.taginfo.Info);
                             image = ZoomPicture(image, txt_Height.Text.ToInt32(), txt_Height.Text.ToInt32());
                             AddPictureBox(image, exportinfo.taginfo, exportinfo.location);
                             break;
@@ -955,16 +955,16 @@ namespace PrintModule
             foreach (Control c in panel.Controls)
             {
                 TagInfo info = c.Tag as TagInfo;
-                switch (info.type)
+                switch (info.Type)
                 {
                     case "text":
-                        e.Graphics.DrawString(info.info, c.Font, new SolidBrush(c.ForeColor), c.Location);
+                        e.Graphics.DrawString(info.Info, c.Font, new SolidBrush(c.ForeColor), c.Location);
                         break;
                     case "image":
                     case "qrcode":
                     case "barcode":
                         PictureBox pb = c as PictureBox;
-                        if (pb != null)
+                        if (pb != null && pb.Image != null)
                         {
                             e.Graphics.DrawImage(pb.Image, pb.Location);
                         }
@@ -1064,7 +1064,23 @@ namespace PrintModule
                 txt_Width.Text = (cmb_PrintPaperSize.SelectedItem as PaperSize).Width.ToString();
                 txt_Height.Text = (cmb_PrintPaperSize.SelectedItem as PaperSize).Height.ToString();
             }
-            panel.Size = new Size(txt_Width.Text.ToInt32(), txt_Height.Text.ToInt32());
+            int panelWidth = txt_Width.Text.ToInt32();
+            int panelHeight = txt_Height.Text.ToInt32();
+            foreach (Control c in panel.Controls)
+            {
+                if (c.Location.X + c.Size.Width > panelWidth || c.Location.Y + c.Size.Height > panelHeight)
+                {
+                    if (MessageBox.Show(this, "更改纸张大小可能会导致部分内容丢失，是否更改？", "更改纸张大小", MessageBoxButtons.OKCancel, MessageBoxIcon.Exclamation) == System.Windows.Forms.DialogResult.OK)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+            }
+            panel.Size = new Size(panelWidth, panelHeight);
         }
         /// <summary>
         /// 当panel的大小改变时，窗口的大小也改变
@@ -1154,7 +1170,7 @@ namespace PrintModule
                     {
                         using (SaveFileDialog savefileDialog = new SaveFileDialog())
                         {
-                            savefileDialog.Filter = "JPeg格式图片|*.jpg|Bitmap格式图片|*.bmp|Gif格式图片|*.gif";
+                            savefileDialog.Filter = "JPeg格式图片|*.jpg|Bitmap格式图片|*.bmp|Gif格式图片|*.gif|Png格式图片|*.png|Tiff格式图片|*.tif";
                             savefileDialog.Title = "选择保存的路径：";
                             if (DialogResult.OK == savefileDialog.ShowDialog() && !savefileDialog.FileName.IsEmpty())
                             {
@@ -1170,6 +1186,12 @@ namespace PrintModule
                                             break;
                                         case 3:
                                             clipImg.Save(fs, System.Drawing.Imaging.ImageFormat.Gif);
+                                            break;
+                                        case 4:
+                                            clipImg.Save(fs, System.Drawing.Imaging.ImageFormat.Png);
+                                            break;
+                                        case 5:
+                                            clipImg.Save(fs, System.Drawing.Imaging.ImageFormat.Tiff);
                                             break;
                                     }
                                 }
@@ -1252,7 +1274,6 @@ namespace PrintModule
                     p.AddEllipse(0, 0, bmp.Width, bmp.Height);
                     g.FillPath(new TextureBrush(bmp), p);
                 }
-                //g.FillEllipse(new TextureBrush(bmp), 0, 0, bmp.Width, bmp.Height);
             }
             return ret;
         }
