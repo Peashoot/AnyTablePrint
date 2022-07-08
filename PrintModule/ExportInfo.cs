@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Drawing;
 using System.Xml;
 
@@ -18,30 +15,37 @@ namespace PrintModule
             foreColor = Color.Black;
             backColor = Color.Transparent;
         }
+
         /// <summary>
         /// 位置信息
         /// </summary>
         public Point location;
+
         /// <summary>
         /// 标签信息
         /// </summary>
         public TagInfo taginfo;
+
         /// <summary>
         /// 控件大小
         /// </summary>
         public Size size;
+
         /// <summary>
         /// 字体信息
         /// </summary>
         public Font foreFont;
+
         /// <summary>
         /// 字体颜色
         /// </summary>
         public Color foreColor;
+
         /// <summary>
         /// 背景信息
         /// </summary>
         public Color backColor;
+
         /// <summary>
         /// 导出信息到XML
         /// </summary>
@@ -125,6 +129,7 @@ namespace PrintModule
                 root.AppendChild(parent);
             }
         }
+
         /// <summary>
         /// 从XML获取信息
         /// </summary>

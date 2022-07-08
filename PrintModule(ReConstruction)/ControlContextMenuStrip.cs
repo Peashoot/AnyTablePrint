@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace PrintModule_ReConstruction_
@@ -12,7 +9,8 @@ namespace PrintModule_ReConstruction_
 
         private ToolStripItem item_Delete;
 
-        public ControlContextMenuStrip() : base()
+        public ControlContextMenuStrip()
+            : base()
         {
             InitContextMenuStrip();
             Items.AddRange(new System.Windows.Forms.ToolStripItem[] {

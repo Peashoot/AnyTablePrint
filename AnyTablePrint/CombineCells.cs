@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
+﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Collections;
+using System.Windows.Forms;
 
 namespace AnyTablePrint
 {
@@ -17,11 +13,13 @@ namespace AnyTablePrint
         /// 横向
         /// </summary>
         Horizontal = 0,
+
         /// <summary>
         /// 纵向
         /// </summary>
         Vertical = 1,
     }
+
     /// <summary>
     /// 合并单元格操作类(不支持L形合并)
     /// </summary>
@@ -30,9 +28,10 @@ namespace AnyTablePrint
         private static Dictionary<string, Rectangle> rowSpan = new Dictionary<string, Rectangle>();//取得需要重新绘制的单元格
         private static Dictionary<string, string> rowValue = new Dictionary<string, string>();//重新绘制的文本框内容
 
-        #region  单元格绘制合并
+        #region 单元格绘制合并
+
         /// <summary>
-        /// 
+        ///
         /// DataGridView合并单元格
         /// </summary>
         /// <param name="dgv">要绘制的DataGridview</param>
@@ -51,6 +50,7 @@ namespace AnyTablePrint
                 MergeCells(dgv, cellArgs, new int[] { minColIndex, maxColIndex, cellArgs.ColumnIndex, cellArgs.ColumnIndex });
             }
         }
+
         /// <summary>
         /// 多行多列合并单元格
         /// </summary>
@@ -67,6 +67,7 @@ namespace AnyTablePrint
                 MergeCells(dgv, cellArgs, indexArray, dgv.GridColor, dgv.DefaultCellStyle.Font, fmt);
             }
         }
+
         /// <summary>
         /// 多行多列合并单元格
         /// </summary>
@@ -126,6 +127,7 @@ namespace AnyTablePrint
                 IsPostMerge(dgv, cellArgs, indexArray, color, foreFont, foreFormat);
             }
         }
+
         /// <summary>
         /// 不是初次单元格绘制
         /// </summary>
@@ -156,6 +158,7 @@ namespace AnyTablePrint
                 MergePrint(dgv, cellArgs, indexArray, color, foreFont, foreFormat);
             }
         }
+
         /// <summary>
         /// 绘制单元格
         /// </summary>
@@ -216,6 +219,7 @@ namespace AnyTablePrint
                 cellArgs.Handled = true;
             }
         }
+
         /// <summary>
         /// 批量合并单元格（已知每个需要合并的单元格的标号）
         /// </summary>
@@ -234,7 +238,8 @@ namespace AnyTablePrint
                 }
             }
         }
-        /// <summary> 
+
+        /// <summary>
         /// 批量合并单元格（已知需要合并的单元格是连在一起的）
         /// </summary>
         /// <param name="dgv"></param>
@@ -252,6 +257,7 @@ namespace AnyTablePrint
                 MergeCells(dgv, cellArgs, indexArray[indexArray.Length - 1], dgv.Columns.Count - 1, MergeDirection.Horizontal);
             }
         }
-        #endregion
+
+        #endregion 单元格绘制合并
     }
 }

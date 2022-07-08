@@ -49,6 +49,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AdjustmentFrame.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="AdjustmentFrame.Designer.cs">
+      <DependentUpon>AdjustmentFrame.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TransientLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="TransientLabel.Designer.cs">
+      <DependentUpon>TransientLabel.cs</DependentUpon>
+    </Compile>
     <Compile Include="ControlContextMenuStrip.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -88,6 +100,15 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TagInfo.cs" />
+    <Compile Include="TransparentLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="TransparentLabelEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="TransientLabelEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <EmbeddedResource Include="PrintForm.resx">
       <DependentUpon>PrintForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -109,6 +130,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="zxing.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

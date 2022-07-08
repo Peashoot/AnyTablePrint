@@ -1,30 +1,32 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
 using System.Drawing;
+using System.Windows.Forms;
 using ZXing;
 
 namespace PrintModule_ReConstruction_
 {
-    public class PrintPreviewQRCodePictureBox : PrintPreviewPictureBox
+    internal class PrintPreviewQRCodePictureBox : PrintPreviewPictureBox
     {
-        public PrintPreviewQRCodePictureBox(Panel panel, ExportInfo exinfo = null) : base(panel, exinfo) { }
+        public PrintPreviewQRCodePictureBox(Panel panel, ExportInfo exinfo)
+            : base(panel, exinfo)
+        {
+        }
+
         /// <summary>
         /// 图片填充PictureBox
         /// </summary>
         /// <param name="exinfo"></param>
-        public override void GeneratePictureBoxFillImage(ExportInfo exinfo = null)
+        public override void GeneratePictureBoxFillImage(ExportInfo exinfo)
         {
-            if (string.IsNullOrEmpty(PanelForm.GetShowStringValue()))
+            if (string.IsNullOrEmpty(exinfo.TagInfo.Info))
             {
                 MessageBox.Show(this, "二维码内容不能为空");
                 return;
             }
-            PicImage = GetQRCodeByZXingNet(PanelForm.GetShowStringValue(), PanelForm.GetWidthValue(), PanelForm.GetHeightValue());
-            AddPictureBox(PicImage, new TagInfo("qrcode", PanelForm.GetShowStringValue()));
+            PicImage = GetQRCodeByZXingNet(exinfo.TagInfo.Info, BelongPanel.Width, BelongPanel.Height);
+            AddPictureBox(PicImage, exinfo);
         }
+
         /// <summary>
         /// 生成二维码图片
         /// </summary>

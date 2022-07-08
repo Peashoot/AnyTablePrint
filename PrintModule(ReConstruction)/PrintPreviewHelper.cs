@@ -1,24 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Drawing;
 using System.Drawing.Printing;
 using System.Windows.Forms;
-using System.Drawing;
 
 namespace PrintModule_ReConstruction_
 {
     public class PrintPreviewHelper : IDisposable
     {
-
         /// <summary>
         /// 是否已经Dispose
         /// </summary>
         private bool disposed = false;
+
         /// <summary>
         /// 打印文档
         /// </summary>
         private PrintDocument _printDocument;
+
         /// <summary>
         /// 要打印的Panel
         /// </summary>

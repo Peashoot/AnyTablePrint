@@ -1,15 +1,32 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
 using System.Drawing;
+using System.Linq;
+using System.Windows.Forms;
 
 namespace PrintModule_ReConstruction_
 {
     public static class IPrintPreviewControlExtendClass
     {
+        #region GetInfoFromExportInfo
+
+        /// <summary>
+        /// 从ExportInfo中获取控件信息内容
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="control"></param>
+        /// <param name="exinfo"></param>
+        public static void GetInfoFromExportInfo<T>(this T control, ExportInfo exinfo) where T : Control, IPrintPreviewControl
+        {
+            control.Font = exinfo.ForeFont;
+            control.ForeColor = exinfo.ForeColor;
+            control.BackColor = exinfo.BackColor;
+            control.Location = exinfo.Location;
+        }
+
+        #endregion GetInfoFromExportInfo
+
         #region PrintPreviewControl_MouseUp
+
         /// <summary>
         /// 鼠标抬起，结束缩放或移动
         /// </summary>
@@ -22,8 +39,11 @@ namespace PrintModule_ReConstruction_
             control.MoveLock = false;
             control.ExpandLock = false;
         }
-        #endregion
+
+        #endregion PrintPreviewControl_MouseUp
+
         #region PrintPreviewControl_MouseDown
+
         /// <summary>
         /// 根据鼠标形状，判断鼠标进入移动模式还是缩放模式
         /// </summary>
@@ -31,7 +51,7 @@ namespace PrintModule_ReConstruction_
         /// <param name="control"></param>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public static void PrintPreviewControl_MouseDown<T>(this T control, object sender, MouseEventArgs e) where T : Control, IPrintPreviewControl 
+        public static void PrintPreviewControl_MouseDown<T>(this T control, object sender, MouseEventArgs e) where T : Control, IPrintPreviewControl
         {
             control.BeforeLoc = control.BelongPanel.PointToClient(Control.MousePosition);
             if (control.Cursor == Cursors.Default)
@@ -43,8 +63,11 @@ namespace PrintModule_ReConstruction_
                 control.ExpandLock = true;
             }
         }
-        #endregion
+
+        #endregion PrintPreviewControl_MouseDown
+
         #region PrintPreviewControl_MouseMove
+
         /// <summary>
         /// 鼠标移动时控件移动（或缩放）
         /// </summary>
@@ -59,9 +82,8 @@ namespace PrintModule_ReConstruction_
                 Math.Min(Math.Max(control.BelongPanel.PointToClient(Control.MousePosition).Y, 0), control.BelongPanel.Height - 1));
             if (control.MoveLock)
             {
-                control.Location = new Point(
-                    Math.Min(Math.Max(control.Left + control.AfterLoc.X - control.BeforeLoc.X, 0), control.BelongPanel.Width - control.Width),
-                    Math.Min(Math.Max(control.Top + control.AfterLoc.Y - control.BeforeLoc.Y, 0), control.BelongPanel.Height - control.Height));
+                control.Left = Math.Min(Math.Max(control.Location.X + control.AfterLoc.X - control.BeforeLoc.X, 0), control.BelongPanel.Size.Width - control.Size.Width);
+                control.Top = Math.Min(Math.Max(control.Location.Y + control.AfterLoc.Y - control.BeforeLoc.Y, 0), control.BelongPanel.Size.Height - control.Size.Height);
                 control.BeforeLoc = control.AfterLoc;
             }
             else if (control.ExpandLock)
@@ -76,46 +98,41 @@ namespace PrintModule_ReConstruction_
                 control.ChangeCursor(control.ExpandArray);
             }
         }
+
         /// <summary>
         /// 缩放控件大小
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="control"></param>
-        public static void ExpandControlSize<T>(this T control) where T : Control, IPrintPreviewControl 
+        public static void ExpandControlSize<T>(this T control) where T : Control, IPrintPreviewControl
         {
             control.AfterLoc = new Point(
-                control.ExpandArray[0] == 0 ? control.AfterLoc.X : 
+                control.ExpandArray[0] == 0 ? control.AfterLoc.X :
                 Math.Min(control.AfterLoc.X, control.Left + control.Width - control.MinWidth),
-                control.ExpandArray[1] == 0 ? control.AfterLoc.Y : 
+                control.ExpandArray[1] == 0 ? control.AfterLoc.Y :
                 Math.Min(control.AfterLoc.Y, control.Top + control.Height - control.MinHeight));
-            control.Location = new Point(
-                control.ExpandArray[0] == 0 ? control.Left : 
-                control.AfterLoc.X,
-                control.ExpandArray[1] == 0 ? control.Top : 
-                control.AfterLoc.Y);
-            control.Size = new Size(
-                control.ExpandArray[2] == 0 ? control.Width : 
-                control.ExpandArray[2] == 1 ? Math.Min(Math.Max(control.Width + control.AfterLoc.X - control.BeforeLoc.X, control.MinWidth), control.BelongPanel.Width - control.Left) : 
-                Math.Min(Math.Max(control.Width + control.BeforeLoc.X - control.AfterLoc.X, control.MinWidth), control.BelongPanel.Width + control.Location.X),
-                control.ExpandArray[3] == 0 ? control.Height : 
-                control.ExpandArray[3] == 1 ? Math.Min(Math.Max(control.Height + control.AfterLoc.Y - control.BeforeLoc.Y, control.MinHeight), control.BelongPanel.Height - control.Top) : 
-                Math.Min(Math.Max(control.Height + control.BeforeLoc.Y - control.AfterLoc.Y, control.MinHeight), control.BelongPanel.Height + control.Location.Y));
+            control.Left = control.ExpandArray[0] == 0 ? control.Left : control.AfterLoc.X;
+            control.Top = control.ExpandArray[1] == 0 ? control.Top : control.AfterLoc.Y;
+            control.Width = control.ExpandArray[2] == 0 ? control.Size.Width : control.ExpandArray[2] == 1 ? Math.Min(Math.Max(control.Size.Width + control.AfterLoc.X - control.BeforeLoc.X, control.MinWidth), control.BelongPanel.Size.Width - control.Location.X) : Math.Min(Math.Max(control.Size.Width + control.BeforeLoc.X - control.AfterLoc.X, control.MinWidth), control.BelongPanel.Size.Width + control.Location.X);
+            control.Height = control.ExpandArray[3] == 0 ? control.Size.Height : control.ExpandArray[3] == 1 ? Math.Min(Math.Max(control.Size.Height + control.AfterLoc.Y - control.BeforeLoc.Y, control.MinHeight), control.BelongPanel.Size.Height - control.Location.Y) : Math.Min(Math.Max(control.Size.Height + control.BeforeLoc.Y - control.AfterLoc.Y, control.MinHeight), control.BelongPanel.Size.Height + control.Location.Y);
             control.BeforeLoc = control.AfterLoc;
         }
+
         /// <summary>
         /// 填充缩放数组
         /// </summary>
-        /// <param name="intArray"></param>
-        /// <param name="mousePos"></param>
-        /// <param name="control"></param>
-        public static void FillExpandArray<T>(this T control, int[] intArray, Point mousePos) where T : Control, IPrintPreviewControl 
+        private static void FillExpandArray<T>(this T control, int[] intArray, Point mousePos) where T : Control, IPrintPreviewControl
         {
             FillExpandArray(intArray, mousePos.X, control.Width, 'x');
             FillExpandArray(intArray, mousePos.Y, control.Height, 'y');
         }
-        public static void FillExpandArray(int[] intArray, int posValue, int ctlSize, char c)
+
+        /// <summary>
+        /// 填充缩放数组
+        /// </summary>
+        private static void FillExpandArray(int[] intArray, int posValue, int ctlSize, char flag)
         {
-            int index = c == 'x' ? 0 : 1;
+            int index = flag == 'x' ? 0 : 1;
             if (NearLine(posValue, 0))
             {
                 intArray[index] = 1;
@@ -132,16 +149,16 @@ namespace PrintModule_ReConstruction_
                 intArray[index + 2] = 0;
             }
         }
+
         /// <summary>
         /// 改变鼠标形状
         /// </summary>
-        /// <param name="intArray"></param>
-        public static void ChangeCursor<T>(this T control, int[] intArray) where T : Control, IPrintPreviewControl 
+        private static void ChangeCursor<T>(this T control, int[] intArray) where T : Control, IPrintPreviewControl
         {
-            if (intArray[0] == intArray[1] && intArray[1] == intArray[2] && intArray[2] == intArray[3])
+            if (intArray.Count(i => i == 0) == 4)
             {
                 control.Cursor = Cursors.Default;
-            } 
+            }
             else if (intArray[1] == 0 && intArray[3] == 0)
             {
                 control.Cursor = Cursors.SizeWE;
@@ -154,28 +171,24 @@ namespace PrintModule_ReConstruction_
             {
                 control.Cursor = Cursors.SizeNWSE;
             }
-            else if (intArray[0] + intArray[1] + intArray[2] + intArray[3] == 1)
+            else if (intArray.Sum() == 1)
             {
                 control.Cursor = Cursors.SizeNESW;
             }
         }
+
         /// <summary>
         /// 判断两个值的差距在不在一定范围内（是否与边界呈一定的距离）
         /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <param name="c"></param>
-        /// <returns></returns>
-        public static bool NearLine(int a, int b, int c = 5)
+        private static bool NearLine(int a, int b, int c = 5)
         {
-            if (b + c >= a && b - c <= a)
-            {
-                return true;
-            }
-            return false;
+            return Math.Abs(a - b) <= 5;
         }
-        #endregion
+
+        #endregion PrintPreviewControl_MouseMove
+
         #region PrintPreviewControl_MouseLeave
+
         /// <summary>
         /// 鼠标离开鼠标形状变为默认形状
         /// </summary>
@@ -183,85 +196,14 @@ namespace PrintModule_ReConstruction_
         /// <param name="control"></param>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public static void PrintPreviewControl_MouseLeave<T>(this T control, object sender, EventArgs e) where T : Control, IPrintPreviewControl 
+        public static void PrintPreviewControl_MouseLeave<T>(this T control, object sender, EventArgs e) where T : Control, IPrintPreviewControl
         {
-            Control current = sender as Control;
             if (!control.MoveLock && !control.ExpandLock)
             {
                 control.Cursor = Cursors.Default;
             }
         }
-        #endregion
-        #region PrintPreviewControl_SizeChanged
-        /// <summary>
-        /// 控件大小变更时修改宽高文本框
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="control"></param>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public static void PrintPreviewControl_SizeChanged<T>(this T control, object sender, EventArgs e) where T : Control, IPrintPreviewControl
-        {
-            PrintForm pf = control.BelongPanel.Parent as PrintForm;
-            if (control.ResetMode && pf != null)
-            {
-                pf.SetWidthText(control.Width.ToString());
-                pf.SetHeightText(control.Height.ToString());
-            }
-        }
-        #endregion
-        #region SetPanelControlsEnabled
-        /// <summary>
-        /// 设置Panel所有控件的Enabled
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="control"></param>
-        /// <param name="enabled"></param>
-        public static void SetPanelControlsEnabled<T>(this T control, bool enabled) where T : Control, IPrintPreviewControl
-        {
-            foreach (Control c in control.BelongPanel.Controls)
-            {
-                c.Enabled = enabled;
-            }
-        }
-        #endregion
-        #region SetButtonEnabled
-        /// <summary>
-        /// 设置界面上所有Button的Enabled
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="control"></param>
-        /// <param name="enabled"></param>
-        /// <param name="exceptButton"></param>
-        public static void SetButtonEnabled<T>(this T control, bool enabled, Button exceptButton) where T : Control, IPrintPreviewControl
-        {
-            foreach (Control c in control.PanelForm.Controls)
-            {
-                Button btn = c as Button;
-                if (btn != null && btn != exceptButton)
-                {
-                    btn.Enabled = enabled;
-                }
-            }
-        }
-        #endregion
-        #region GetInfoFromExportInfo
-        /// <summary>
-        /// 从ExportInfo中获取控件信息内容
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="control"></param>
-        /// <param name="exinfo"></param>
-        public static void GetInfoFromExportInfo<T>(this T control, ExportInfo exinfo) where T : Control, IPrintPreviewControl
-        {
-            control.ForeColor = exinfo.foreColor;
-            control.Font = exinfo.foreFont;
-            control.BackColor = exinfo.backColor;
-            control.PanelForm.SetShowStringText(exinfo.taginfo.Info);
-            control.PanelForm.SetWidthText(exinfo.size.Width.ToString());
-            control.PanelForm.SetHeightText(exinfo.size.Height.ToString());
-            control.Location = exinfo.location;
-        }
-        #endregion
+
+        #endregion PrintPreviewControl_MouseLeave
     }
 }

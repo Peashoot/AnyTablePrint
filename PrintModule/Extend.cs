@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Globalization;
+using System.Text;
 
 namespace PrintModule
 {
-    static class Extend
+    internal static class Extend
     {
         /// <summary>
         /// 字符串转int
@@ -24,6 +22,7 @@ namespace PrintModule
                 throw;
             }
         }
+
         /// <summary>
         /// 字符串数组转int数组
         /// </summary>
@@ -45,6 +44,7 @@ namespace PrintModule
                 throw;
             }
         }
+
         /// <summary>
         /// 字符串转double
         /// </summary>
@@ -61,6 +61,7 @@ namespace PrintModule
                 throw;
             }
         }
+
         /// <summary>
         /// TrimEnd字符串
         /// </summary>
@@ -82,6 +83,7 @@ namespace PrintModule
                 throw;
             }
         }
+
         /// <summary>
         /// 判断字符串是否为空
         /// </summary>
@@ -91,6 +93,7 @@ namespace PrintModule
         {
             return str == string.Empty;
         }
+
         /// <summary>
         /// 字符串重复叠加
         /// </summary>
@@ -113,6 +116,7 @@ namespace PrintModule
                 throw;
             }
         }
+
         /// <summary>
         /// 字符串转日期
         /// </summary>

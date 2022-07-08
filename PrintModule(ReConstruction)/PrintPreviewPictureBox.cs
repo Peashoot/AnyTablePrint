@@ -1,123 +1,124 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
 using System.Drawing;
+using System.Windows.Forms;
 
 namespace PrintModule_ReConstruction_
 {
-    public abstract class PrintPreviewPictureBox : PictureBox, IPrintPreviewControl
+    internal abstract class PrintPreviewPictureBox : PictureBox, IPrintPreviewControl
     {
         #region 参数
+
         /// <summary>
         /// 拖动前鼠标的位置
         /// </summary>
         public Point BeforeLoc { get; set; }
+
         /// <summary>
         /// 拖动后鼠标的位置
         /// </summary>
         public Point AfterLoc { get; set; }
+
         /// <summary>
         /// 重新设置模式
         /// </summary>
         public bool ResetMode { get; set; }
+
         /// <summary>
         /// 控件拖动
         /// </summary>
         public bool MoveLock { get; set; }
+
         /// <summary>
         /// 控件缩放
         /// </summary>
         public bool ExpandLock { get; set; }
+
         /// <summary>
         /// 缩放数组（表示缩放的类型）
         /// </summary>
         public int[] ExpandArray { get; set; }
+
         /// <summary>
         /// 控件的最小宽度
         /// </summary>
         public int MinWidth { get; set; }
+
         /// <summary>
         /// 控件的最小高度
         /// </summary>
         public int MinHeight { get; set; }
+
         /// <summary>
         /// 所属的Panel
         /// </summary>
         public Panel BelongPanel { get; set; }
-        /// <summary>
-        /// BelongPanel所在的窗体
-        /// </summary>
-        public PrintForm PanelForm { get; set; }
+
         /// <summary>
         /// 右键菜单
         /// </summary>
         public ContextMenuStrip MenuStrip { get; set; }
+
         /// <summary>
         /// 图片
         /// </summary>
         public Image PicImage { get; set; }
-        #endregion 
 
-        public PrintPreviewPictureBox(Panel panel, ExportInfo exinfo = null)
+        /// <summary>
+        /// 导入信息
+        /// </summary>
+        public ExportInfo Exinfo { get; set; }
+
+        #endregion 参数
+
+        public PrintPreviewPictureBox(Panel panel, ExportInfo exinfo)
             : base()
         {
             try
             {
                 BelongPanel = panel;
-                PanelForm = panel.Parent as PrintForm;
-                if (PanelForm == null)
-                {
-                    throw new Exception("Can't get PanelForm.");
-                }
                 ExpandArray = new int[4];
                 MenuStrip = new ControlContextMenuStrip();
                 panel.Controls.Add(this);
+                SizeMode = PictureBoxSizeMode.StretchImage;
+                Exinfo = exinfo;
+                if (Exinfo != null)
+                {
+                    this.GetInfoFromExportInfo(Exinfo);
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(this, ex.Message);
             }
-            if (exinfo != null)
-            {
-                this.GetInfoFromExportInfo(exinfo);
-            }
         }
+
         /// <summary>
         /// 获取图片填充PictureBox
         /// </summary>
-        /// <param name="exinfo"></param>
-        public abstract void GeneratePictureBoxFillImage(ExportInfo exinfo = null);
+        public abstract void GeneratePictureBoxFillImage(ExportInfo exinfo);
+
         /// <summary>
         /// 添加PictureBox到Panel
         /// </summary>
-        /// <param name="img"></param>
-        /// <param name="tag"></param>
-        protected void AddPictureBox(Image img, TagInfo tag)
+        protected void AddPictureBox(Image img, ExportInfo exinfo)
         {
-            this.SetPanelControlsEnabled(true);
+            PicBoxFillImage(img, exinfo);
             if (ResetMode)
             {
-                PicBoxFillImage(img, tag);
                 ResetMode = false;
             }
             else
             {
-                PicBoxFillImage(img, tag);
                 AddControlEvent();
             }
-            PanelForm.SetShowStringText(string.Empty);
-            this.SetButtonEnabled(true, null);
         }
+
         /// <summary>
         /// 填充控件信息
         /// </summary>
-        /// <param name="img"></param>
-        /// <param name="tag"></param>
-        private void PicBoxFillImage(Image img, TagInfo tag)
+        private void PicBoxFillImage(Image img, ExportInfo exinfo)
         {
-            if (tag.Type == "background")
+            if (exinfo.TagInfo.Type == "background")
             {
                 SendToBack();
             }
@@ -127,9 +128,10 @@ namespace PrintModule_ReConstruction_
                 Image = img;
                 BringToFront();
             }
-            Size = new Size(PanelForm.GetWidthValue(), PanelForm.GetHeightValue());
-            Tag = tag;
+            Size = Exinfo.Size;
+            Tag = exinfo.TagInfo.Info;
         }
+
         /// <summary>
         /// 增加控件事件
         /// </summary>
@@ -140,7 +142,6 @@ namespace PrintModule_ReConstruction_
             MouseDown += new MouseEventHandler(this.PrintPreviewControl_MouseDown);
             MouseMove += new MouseEventHandler(this.PrintPreviewControl_MouseMove);
             MouseLeave += new EventHandler(this.PrintPreviewControl_MouseLeave);
-            SizeChanged += new EventHandler(this.PrintPreviewControl_SizeChanged);
         }
     }
 }

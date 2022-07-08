@@ -1,30 +1,32 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
 using System.Drawing;
+using System.Windows.Forms;
 using ZXing;
 
 namespace PrintModule_ReConstruction_
 {
-    public class PrintPreviewBarCodePictureBox : PrintPreviewPictureBox
+    internal class PrintPreviewBarCodePictureBox : PrintPreviewPictureBox
     {
-        public PrintPreviewBarCodePictureBox(Panel panel, ExportInfo exinfo = null) : base(panel, exinfo) { }
+        public PrintPreviewBarCodePictureBox(Panel panel, ExportInfo exinfo)
+            : base(panel, exinfo)
+        {
+        }
+
         /// <summary>
         /// 图片填充PictureBox
         /// </summary>
         /// <param name="exinfo"></param>
-        public override void GeneratePictureBoxFillImage(ExportInfo exinfo = null)
+        public override void GeneratePictureBoxFillImage(ExportInfo exinfo)
         {
-            if (String.IsNullOrEmpty(PanelForm.GetShowStringValue()))
+            if (String.IsNullOrEmpty(exinfo.TagInfo.Info))
             {
                 MessageBox.Show(this, "条码内容不能为空！");
                 return;
             }
-            PicImage = GetBarCodeByZXingNet(PanelForm.GetShowStringValue(), PanelForm.GetWidthValue(), PanelForm.GetHeightValue());
-            AddPictureBox(PicImage, new TagInfo("barcode", PanelForm.GetShowStringValue()));
+            PicImage = GetBarCodeByZXingNet(exinfo.TagInfo.Info, BelongPanel.Width, BelongPanel.Width / 3);
+            AddPictureBox(PicImage, exinfo);
         }
+
         /// <summary>
         /// 生成条码图片
         /// </summary>

@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
-using System.IO;
-using ZXing;
-using System.Xml;
-using System.Drawing.Printing;
 using System.Collections;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Printing;
+using System.IO;
+using System.Windows.Forms;
+using System.Xml;
+using ZXing;
 
 namespace PrintModule
 {
@@ -20,75 +16,89 @@ namespace PrintModule
         {
             InitializeComponent();
         }
+
         #region 成员变量
+
         /// <summary>
         /// 字体
         /// </summary>
         private Font foreFont;
-        /// <summary>
-        /// 字体颜色
-        /// </summary>
-        private Color foreColor;
+
         /// <summary>
         /// 背景颜色
         /// </summary>
         private Color backColor;
+
         /// <summary>
-        /// 颜色选择
+        /// 字体颜色
         /// </summary>
-        ColorDialog colorDialog = new ColorDialog();
+        private Color foreColor;
+
         /// <summary>
         /// 拖动前鼠标的位置
         /// </summary>
         private Point beforeLoc;
+
         /// <summary>
         /// 拖动后鼠标的位置
         /// </summary>
         private Point afterLoc;
+
         /// <summary>
         /// 添加的图片
         /// </summary>
         private Image image;
+
         /// <summary>
         /// 重新设置模式
         /// </summary>
         private bool resetMode;
+
         /// <summary>
         /// 控件拖动
         /// </summary>
         private bool moveLock;
+
         /// <summary>
         /// 控件缩放
         /// </summary>
         private bool expandLock;
+
         /// <summary>
         /// 缩放字符串（表示缩放的类型）
         /// </summary>
         private string expandStr;
+
         /// <summary>
         /// 控件的最小宽度
         /// </summary>
         private int minWidth;
+
         /// <summary>
         /// 控件的最小高度
         /// </summary>
         private int minHeight;
+
         /// <summary>
         /// 存储的Label
         /// </summary>
         private Label labstore;
+
         /// <summary>
         /// 存储的PictureBox
         /// </summary>
         private PictureBox pbstore;
+
         /// <summary>
         /// 存储的panel
         /// </summary>
         private PictureBox panelPicBox;
+
         /// <summary>
         /// 截图模式
         /// </summary>
         private bool _clipmode;
+
         private bool clipMode
         {
             get { return _clipmode; }
@@ -103,6 +113,7 @@ namespace PrintModule
                     panel.DrawToBitmap(panelImg, panel.ClientRectangle);
                     panelPicBox.Image = panelImg;
                     panelPicBox.Visible = true;
+                    panelPicBox.BringToFront();
                     SetButtonEnabled(false, btn_Screenshots);
                     btn_FontDialog.Enabled = false;
                     btn_BackColor.Enabled = false;
@@ -111,23 +122,36 @@ namespace PrintModule
                 {
                     panelPicBox.Visible = false;
                     SetButtonEnabled(true, null);
+                    btn_FontDialog.Enabled = true;
+                    btn_BackColor.Enabled = true;
                 }
             }
         }
+
         /// <summary>
         /// 是否正在裁剪
         /// </summary>
         private bool isClipping;
+
         /// <summary>
         /// 裁剪矩阵
         /// </summary>
         private Rectangle clippingRect;
+
         /// <summary>
         /// 打印文档
         /// </summary>
         private PrintDocument printDocument = new PrintDocument();
-        #endregion
+
+        /// <summary>
+        /// 控件命名标记
+        /// </summary>
+        private Dictionary<string, int> ControlNameIndex = new Dictionary<string, int>();
+
+        #endregion 成员变量
+
         #region 窗体加载
+
         /// <summary>
         /// 窗体加载
         /// </summary>
@@ -139,6 +163,7 @@ namespace PrintModule
             memberInit();
             BindComboBox();
         }
+
         /// <summary>
         /// 初始化成员变量
         /// </summary>
@@ -154,10 +179,11 @@ namespace PrintModule
             minHeight = 10;
             foreColor = Color.Black;
             foreFont = new Font("宋体", 11f, FontStyle.Regular);
-            backColor = Color.Transparent;
+            backColor = Color.Black;
             beforeLoc = afterLoc = new Point();
             printDocument.PrintPage += new PrintPageEventHandler(printDocument_PrintPage);
         }
+
         /// <summary>
         /// panelstore初始化
         /// </summary>
@@ -174,6 +200,7 @@ namespace PrintModule
             panelPicBox.MouseUp += new MouseEventHandler(panel_MouseUp);
             panelPicBox.Paint += new PaintEventHandler(panel_Paint);
         }
+
         /// <summary>
         /// 绑定下拉框
         /// </summary>
@@ -187,9 +214,13 @@ namespace PrintModule
             cmb_Printer.Items.AddRange(list_printName.ToArray());
             cmb_Printer.SelectedIndex = 0;
         }
-        #endregion
+
+        #endregion 窗体加载
+
         #region 选择属性
+
         #region 选择字体
+
         /// <summary>
         /// 选择字体
         /// </summary>
@@ -197,17 +228,23 @@ namespace PrintModule
         /// <param name="e"></param>
         private void btn_FontDialog_Click(object sender, EventArgs e)
         {
-            FontDialog fontDialog = new FontDialog();
-            fontDialog.Font = foreFont;
-            fontDialog.Color = foreColor;
-            if (DialogResult.OK == fontDialog.ShowDialog())
+            using (FontDialog fontDialog = new FontDialog())
             {
-                foreFont = fontDialog.Font;
-                foreColor = fontDialog.Color;
+                fontDialog.ShowColor = true;
+                fontDialog.Font = foreFont;
+                fontDialog.Color = foreColor;
+                if (DialogResult.OK == fontDialog.ShowDialog())
+                {
+                    foreFont = fontDialog.Font;
+                    foreColor = fontDialog.Color;
+                }
             }
         }
-        #endregion
+
+        #endregion 选择字体
+
         #region 选择背景颜色
+
         /// <summary>
         /// 选择背景颜色
         /// </summary>
@@ -215,14 +252,20 @@ namespace PrintModule
         /// <param name="e"></param>
         private void btn_ColorDialog_Click(object sender, EventArgs e)
         {
-            colorDialog.Color = backColor;
-            if (DialogResult.OK == colorDialog.ShowDialog())
+            using (ColorDialog colorDialog = new ColorDialog())
             {
-                backColor = colorDialog.Color;
+                colorDialog.Color = backColor;
+                if (DialogResult.OK == colorDialog.ShowDialog())
+                {
+                    backColor = colorDialog.Color;
+                }
             }
         }
-        #endregion
+
+        #endregion 选择背景颜色
+
         #region 数字框只允许输入数字
+
         /// <summary>
         /// 数字框只允许输入数字
         /// </summary>
@@ -240,10 +283,15 @@ namespace PrintModule
                 e.Handled = false;
             }
         }
-        #endregion
-        #endregion
+
+        #endregion 数字框只允许输入数字
+
+        #endregion 选择属性
+
         #region 增加控件
+
         #region 增加Label文本标签
+
         /// <summary>
         /// 增加Label文本标签
         /// </summary>
@@ -263,8 +311,8 @@ namespace PrintModule
             {
                 labstore.Text = txt_ShowString.Text;
                 labstore.AutoSize = true;
-                labstore.ForeColor = foreColor;
                 labstore.Font = foreFont;
+                labstore.ForeColor = foreColor;
                 labstore.BackColor = backColor;
                 labstore.BringToFront();
                 labstore.Tag = new TagInfo("text", txt_ShowString.Text.Trim());
@@ -276,19 +324,23 @@ namespace PrintModule
                 panel.Controls.Add(additem);
                 additem.Text = txt_ShowString.Text;
                 additem.AutoSize = true;
-                additem.ForeColor = foreColor;
                 additem.Font = foreFont;
+                additem.ForeColor = foreColor;
                 additem.BackColor = backColor;
                 additem.BringToFront();
                 additem.Location = location;
                 additem.Tag = new TagInfo("text", txt_ShowString.Text.Trim());
+                additem.Name = GetControlName("text");
                 AddControlEvent(additem);
             }
             txt_ShowString.Text = string.Empty;
             SetButtonEnabled(true, null);
         }
-        #endregion
+
+        #endregion 增加Label文本标签
+
         #region 添加图片
+
         /// <summary>
         /// 添加图片
         /// </summary>
@@ -307,6 +359,7 @@ namespace PrintModule
             }
             AddPictureBox(image, new TagInfo("image", openFileDialog.FileName));
         }
+
         /// <summary>
         /// 按比例缩放图片
         /// </summary>
@@ -358,13 +411,15 @@ namespace PrintModule
             }
             catch (Exception)
             {
-
             }
 
             return null;
         }
-        #endregion
+
+        #endregion 添加图片
+
         #region 增加条码
+
         /// <summary>
         /// 增加条码
         /// </summary>
@@ -379,6 +434,7 @@ namespace PrintModule
             image = GetBarCodeByZXingNet(txt_ShowString.Text.Trim(), txt_Width.Text.ToInt32(), txt_Height.Text.ToInt32());
             AddPictureBox(image, new TagInfo("barcode", txt_ShowString.Text.Trim()));
         }
+
         /// <summary>
         /// 生成条码图片
         /// </summary>
@@ -406,8 +462,11 @@ namespace PrintModule
             }
             return result;
         }
-        #endregion
+
+        #endregion 增加条码
+
         #region 增加二维码
+
         /// <summary>
         /// 增加二维码
         /// </summary>
@@ -423,6 +482,7 @@ namespace PrintModule
             image = GetQRCodeByZXingNet(txt_ShowString.Text.Trim(), txt_Width.Text.ToInt32(), txt_Height.Text.ToInt32());
             AddPictureBox(image, new TagInfo("qrcode", txt_ShowString.Text.Trim()));
         }
+
         /// <summary>
         /// 生成二维码图片
         /// </summary>
@@ -451,8 +511,11 @@ namespace PrintModule
             }
             return result;
         }
-        #endregion
+
+        #endregion 增加二维码
+
         #region 添加背景
+
         /// <summary>
         /// 添加背景
         /// </summary>
@@ -460,10 +523,13 @@ namespace PrintModule
         /// <param name="e"></param>
         private void btn_Background_Click(object sender, EventArgs e)
         {
-            AddPictureBox(null, new TagInfo("background", colorDialog.Color.Name));
+            AddPictureBox(null, new TagInfo("background", backColor.Name));
         }
-        #endregion
+
+        #endregion 添加背景
+
         #region 增加PictureBox
+
         /// <summary>
         /// 增加PictureBox
         /// </summary>
@@ -509,14 +575,18 @@ namespace PrintModule
                 pb.Size = new Size(txt_Width.Text.ToInt32(), txt_Height.Text.ToInt32());
                 pb.BackColor = backColor;
                 pb.Tag = tag;
+                pb.Name = GetControlName("image");
                 AddControlEvent(pb);
             }
             txt_ShowString.Text = string.Empty;
             //AllButtonEnabled();
             SetButtonEnabled(true, null);
         }
-        #endregion
+
+        #endregion 增加PictureBox
+
         #region 给控件添加事件
+
         /// <summary>
         /// 给控件添加事件
         /// </summary>
@@ -530,6 +600,7 @@ namespace PrintModule
             control.MouseLeave += new EventHandler(Control_MouseLeave);
             control.SizeChanged += new EventHandler(Control_SizeChanged);
         }
+
         /// <summary>
         /// 给控件删除事件
         /// </summary>
@@ -543,8 +614,11 @@ namespace PrintModule
             control.MouseLeave -= new EventHandler(Control_MouseLeave);
             control.SizeChanged -= new EventHandler(Control_SizeChanged);
         }
-        #endregion
+
+        #endregion 给控件添加事件
+
         #region 鼠标拖动事件
+
         /// <summary>
         /// 鼠标按下记录当前鼠标位置
         /// </summary>
@@ -562,6 +636,7 @@ namespace PrintModule
                 expandLock = true;
             }
         }
+
         /// <summary>
         /// 鼠标抬起移动控件
         /// </summary>
@@ -572,6 +647,7 @@ namespace PrintModule
             moveLock = false;
             expandLock = false;
         }
+
         /// <summary>
         /// 鼠标抬起移动控件
         /// </summary>
@@ -654,6 +730,7 @@ namespace PrintModule
                 }
             }
         }
+
         /// <summary>
         /// 判断一个数是否在一个区间内
         /// </summary>
@@ -667,6 +744,7 @@ namespace PrintModule
                 return true;
             return false;
         }
+
         /// <summary>
         /// 鼠标离开控件
         /// </summary>
@@ -680,8 +758,11 @@ namespace PrintModule
                 this.Cursor = Cursors.Default;
             }
         }
-        #endregion
+
+        #endregion 鼠标拖动事件
+
         #region 右键按钮事件
+
         /// <summary>
         /// 删除
         /// </summary>
@@ -691,6 +772,7 @@ namespace PrintModule
         {
             menuStrip.SourceControl.Dispose();
         }
+
         /// <summary>
         /// 重新设置
         /// </summary>
@@ -707,8 +789,8 @@ namespace PrintModule
                 label.Enabled = true;
                 labstore = label;
                 foreFont = label.Font;
-                foreColor = label.ForeColor;
                 txt_ShowString.Text = label.Text;
+                foreColor = label.ForeColor;
                 backColor = label.BackColor;
                 SetButtonEnabled(false, btn_AddLabel);
             }
@@ -725,12 +807,15 @@ namespace PrintModule
                         case "image":
                             btn = btn_AddImage;
                             break;
+
                         case "barcode":
                             btn = btn_AddBarcode;
                             break;
+
                         case "qrcode":
                             btn = btn_AddQRCode;
                             break;
+
                         case "background":
                             btn = btn_AddBackground;
                             break;
@@ -744,6 +829,7 @@ namespace PrintModule
                 }
             }
         }
+
         /// <summary>
         /// 设置panel里所有控件的Enabled
         /// </summary>
@@ -755,6 +841,7 @@ namespace PrintModule
                 c.Enabled = enabled;
             }
         }
+
         /// <summary>
         /// 重置模式下，宽高label实时显示控件宽高
         /// </summary>
@@ -769,9 +856,31 @@ namespace PrintModule
                 txt_Height.Text = c.Size.Height.ToString();
             }
         }
+
+        #endregion 右键按钮事件
+
+        #region 获取控件名称
+        /// <summary>
+        /// 获取控件名称
+        /// </summary>
+        private string GetControlName(string type)
+        {
+            if (ControlNameIndex.ContainsKey(type))
+            {
+                ControlNameIndex[type]++;
+            }
+            else
+            {
+                ControlNameIndex[type] = 1;
+            }
+            return type + ControlNameIndex[type];
+        }
         #endregion
-        #endregion
+
+        #endregion 增加控件
+
         #region 改变Enabled属性
+
         /// <summary>
         ///  设置按钮Enabled
         /// </summary>
@@ -788,8 +897,11 @@ namespace PrintModule
                 }
             }
         }
-        #endregion
+
+        #endregion 改变Enabled属性
+
         #region 导出到XML
+
         /// <summary>
         /// 导出信息到XML
         /// </summary>
@@ -846,8 +958,11 @@ namespace PrintModule
                 }
             }
         }
-        #endregion
+
+        #endregion 导出到XML
+
         #region 从XML导入信息
+
         /// <summary>
         /// 从XML导入信息
         /// </summary>
@@ -890,33 +1005,38 @@ namespace PrintModule
                 {
                     panel.Controls[0].Dispose();
                 }
+                //exportlist.Reverse();
                 //添加控件信息
                 foreach (ExportInfo exportinfo in exportlist)
                 {
                     txt_ShowString.Text = exportinfo.taginfo.Info;
                     txt_Width.Text = exportinfo.size.Width.ToString();
                     txt_Height.Text = exportinfo.size.Height.ToString();
-                    foreColor = exportinfo.foreColor;
                     foreFont = exportinfo.foreFont;
+                    foreColor = exportinfo.foreColor;
                     backColor = exportinfo.backColor;
                     switch (exportinfo.taginfo.Type)
                     {
                         case "text":
                             AddLabel(exportinfo.location);
                             break;
+
                         case "image":
                             image = Image.FromFile(exportinfo.taginfo.Info);
                             image = ZoomPicture(image, txt_Height.Text.ToInt32(), txt_Height.Text.ToInt32());
                             AddPictureBox(image, exportinfo.taginfo, exportinfo.location);
                             break;
+
                         case "qrcode":
                             image = GetQRCodeByZXingNet(txt_ShowString.Text.Trim(), txt_Width.Text.ToInt32(), txt_Height.Text.ToInt32());
                             AddPictureBox(image, exportinfo.taginfo, exportinfo.location);
                             break;
+
                         case "barcode":
                             image = GetBarCodeByZXingNet(txt_ShowString.Text.Trim(), txt_Width.Text.ToInt32(), txt_Height.Text.ToInt32());
                             AddPictureBox(image, exportinfo.taginfo, exportinfo.location);
                             break;
+
                         case "background":
                             AddPictureBox(null, exportinfo.taginfo, exportinfo.location);
                             break;
@@ -928,8 +1048,11 @@ namespace PrintModule
                 throw;
             }
         }
-        #endregion
+
+        #endregion 从XML导入信息
+
         #region 清空Panel
+
         /// <summary>
         /// 清空Panel
         /// </summary>
@@ -942,9 +1065,13 @@ namespace PrintModule
                 panel.Controls[i].Dispose();
             }
         }
-        #endregion
+
+        #endregion 清空Panel
+
         #region 打印
+
         #region 打印页的生成
+
         /// <summary>
         /// 打印页的生成
         /// </summary>
@@ -960,6 +1087,7 @@ namespace PrintModule
                     case "text":
                         e.Graphics.DrawString(info.Info, c.Font, new SolidBrush(c.ForeColor), c.Location);
                         break;
+
                     case "image":
                     case "qrcode":
                     case "barcode":
@@ -969,14 +1097,18 @@ namespace PrintModule
                             e.Graphics.DrawImage(pb.Image, pb.Location);
                         }
                         break;
+
                     case "background":
                         e.Graphics.FillRegion(new SolidBrush(c.BackColor), c.Region);
                         break;
                 }
             }
         }
-        #endregion
+
+        #endregion 打印页的生成
+
         #region 打印预览
+
         /// <summary>
         /// 打印预览
         /// </summary>
@@ -1003,8 +1135,11 @@ namespace PrintModule
                 printpreviewdialog.ShowDialog();
             }
         }
-        #endregion
+
+        #endregion 打印预览
+
         #region 打印设置
+
         /// <summary>
         /// 打印设置
         /// </summary>
@@ -1027,8 +1162,11 @@ namespace PrintModule
             printDocument.DefaultPageSettings.Margins.Top = 0;
             printDocument.DefaultPageSettings.Margins.Left = 0;
         }
-        #endregion
+
+        #endregion 打印设置
+
         #region 打印
+
         /// <summary>
         /// 打印
         /// </summary>
@@ -1036,17 +1174,26 @@ namespace PrintModule
         /// <param name="e"></param>
         private void btn_Print_Click(object sender, EventArgs e)
         {
-            if (cmb_Printer.SelectedIndex < 0)
+            //if (cmb_Printer.SelectedIndex < 0)
+            //{
+            //    MessageBox.Show(this, "打印机未选择");
+            //    return;
+            //}
+            //PrintSetting(panel.Size.Width, panel.Size.Height, cmb_Printer.SelectedItem.ToString());
+            //printDocument.DefaultPageSettings.Landscape = chk_Landscape.Checked;
+            //printDocument.Print();
+            IssueLayoutHelper.SendLayout(IssueLayoutHelper.GetLayoutFromPanel(panel));
+            var propertyList = IssueLayoutHelper.GetPropertyFromPanel(panel);
+            foreach (var propertyInfo in propertyList)
             {
-                MessageBox.Show(this, "打印机未选择");
-                return;
+                IssueLayoutHelper.SendProperty(propertyInfo);
             }
-            PrintSetting(panel.Size.Width, panel.Size.Height, cmb_Printer.SelectedItem.ToString());
-            printDocument.DefaultPageSettings.Landscape = chk_Landscape.Checked;
-            printDocument.Print();
         }
-        #endregion
+
+        #endregion 打印
+
         #region 改变打印纸张大小
+
         /// <summary>
         /// 打印纸张大小改变
         /// </summary>
@@ -1082,6 +1229,7 @@ namespace PrintModule
             }
             panel.Size = new Size(panelWidth, panelHeight);
         }
+
         /// <summary>
         /// 当panel的大小改变时，窗口的大小也改变
         /// </summary>
@@ -1091,9 +1239,13 @@ namespace PrintModule
         {
             this.Size = new Size(Math.Max(200, panel.Size.Width + 185), Math.Max(480, panel.Size.Height + 63));
         }
-        #endregion
-        #endregion
+
+        #endregion 改变打印纸张大小
+
+        #endregion 打印
+
         #region 把Panel截取放入剪切板中并可选地保存为图片
+
         /// <summary>
         /// 截取图片
         /// </summary>
@@ -1103,6 +1255,7 @@ namespace PrintModule
         {
             clipMode = !clipMode;
         }
+
         /// <summary>
         /// 鼠标按下，记录截图起始点
         /// </summary>
@@ -1123,6 +1276,7 @@ namespace PrintModule
                 }
             }
         }
+
         /// <summary>
         /// 鼠标移动，显示截图范围
         /// </summary>
@@ -1149,6 +1303,7 @@ namespace PrintModule
                 pb.Refresh();
             }
         }
+
         /// <summary>
         /// 鼠标抬起，截图完成
         /// </summary>
@@ -1181,15 +1336,19 @@ namespace PrintModule
                                         case 1:
                                             clipImg.Save(fs, System.Drawing.Imaging.ImageFormat.Jpeg);
                                             break;
+
                                         case 2:
                                             clipImg.Save(fs, System.Drawing.Imaging.ImageFormat.Bmp);
                                             break;
+
                                         case 3:
                                             clipImg.Save(fs, System.Drawing.Imaging.ImageFormat.Gif);
                                             break;
+
                                         case 4:
                                             clipImg.Save(fs, System.Drawing.Imaging.ImageFormat.Png);
                                             break;
+
                                         case 5:
                                             clipImg.Save(fs, System.Drawing.Imaging.ImageFormat.Tiff);
                                             break;
@@ -1204,6 +1363,7 @@ namespace PrintModule
                 clipMode = false;
             }
         }
+
         /// <summary>
         /// panel重绘
         /// </summary>
@@ -1217,7 +1377,9 @@ namespace PrintModule
                 //e.Graphics.DrawEllipse(new Pen(new SolidBrush(Color.Red)), clippingRect);
             }
         }
+
         #region 截椭圆图片
+
         /// <summary>
         /// 截椭圆图片
         /// </summary>
@@ -1232,6 +1394,7 @@ namespace PrintModule
             }
             return ret;
         }
+
         /// <summary>
         /// 截椭圆图片
         /// </summary>
@@ -1258,6 +1421,7 @@ namespace PrintModule
             }
             return ret;
         }
+
         /// <summary>
         /// 截椭圆图片
         /// </summary>
@@ -1277,6 +1441,7 @@ namespace PrintModule
             }
             return ret;
         }
+
         /// <summary>
         /// 截椭圆图片
         /// </summary>
@@ -1308,9 +1473,13 @@ namespace PrintModule
             }
             return ret;
         }
-        #endregion
-        #endregion
+
+        #endregion 截椭圆图片
+
+        #endregion 把Panel截取放入剪切板中并可选地保存为图片
+
         #region 更改打印机或打印纸张
+
         /// <summary>
         /// 切换打印机时更改打印机支持的纸张大小
         /// </summary>
@@ -1329,6 +1498,7 @@ namespace PrintModule
             cmb_PrintPaperSize.DisplayMember = "PaperName";
             cmb_PrintPaperSize.SelectedIndex = cmb_PrintPaperSize.Items.Count - 1;
         }
+
         /// <summary>
         /// 切换纸张大小时将纸张大小显示在textbox中
         /// </summary>
@@ -1339,6 +1509,7 @@ namespace PrintModule
             txt_Width.Text = (cmb_PrintPaperSize.SelectedItem as PaperSize).Width.ToString();
             txt_Height.Text = (cmb_PrintPaperSize.SelectedItem as PaperSize).Height.ToString();
         }
-        #endregion
+
+        #endregion 更改打印机或打印纸张
     }
 }

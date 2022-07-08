@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
 using System.Drawing;
 using System.IO;
+using System.Windows.Forms;
 
 namespace PrintModule_ReConstruction_
 {
@@ -18,9 +15,17 @@ namespace PrintModule_ReConstruction_
             Size = _clippingPanel.Size;
             Location = _clippingPanel.Location;
             BringToFront();
+            this.SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.ResizeRedraw | ControlStyles.AllPaintingInWmPaint, true);
             Visible = false;
         }
+
+        #region 参数
+
+        /// <summary>
+        /// 裁剪模式
+        /// </summary>
         private bool _clipMode;
+
         public bool ClipMode
         {
             get { return _clipMode; }
@@ -48,16 +53,38 @@ namespace PrintModule_ReConstruction_
             }
         }
 
+        /// <summary>
+        /// 正在裁剪
+        /// </summary>
         private bool _isClipping;
 
+        /// <summary>
+        /// 裁剪前鼠标坐标
+        /// </summary>
         private Point _beforeLoc;
 
+        /// <summary>
+        /// 裁剪后鼠标坐标
+        /// </summary>
         private Point _afterLoc;
 
+        /// <summary>
+        /// 裁剪矩形
+        /// </summary>
         private Rectangle _clippingRect;
 
+        /// <summary>
+        /// 被裁剪的Panel
+        /// </summary>
         private Panel _clippingPanel;
 
+        #endregion 参数
+
+        #region 增加事件
+
+        /// <summary>
+        /// 增加事件
+        /// </summary>
         public void AddPanelTriggerEvent()
         {
             MouseDown += new MouseEventHandler(PrintPreviewControlPanel_MouseDown);
@@ -66,6 +93,13 @@ namespace PrintModule_ReConstruction_
             Paint += new PaintEventHandler(PrintPreviewControlPanel_Paint);
         }
 
+        #endregion 增加事件
+
+        #region 按下裁剪，移动边框
+
+        /// <summary>
+        /// 鼠标按下进入裁剪状态
+        /// </summary>
         private void PrintPreviewControlPanel_MouseDown(object sender, MouseEventArgs e)
         {
             if (ClipMode)
@@ -78,6 +112,9 @@ namespace PrintModule_ReConstruction_
             }
         }
 
+        /// <summary>
+        /// 鼠标移动画出裁剪框
+        /// </summary>
         private void PrintPreviewControlPanel_MouseMove(object sender, MouseEventArgs e)
         {
             _afterLoc = PointToClient(MousePosition);
@@ -96,6 +133,13 @@ namespace PrintModule_ReConstruction_
             Refresh();
         }
 
+        #endregion 按下裁剪，移动边框
+
+        #region 鼠标抬起结束裁剪保存图片
+
+        /// <summary>
+        /// 鼠标抬起结束裁剪保存图片
+        /// </summary>
         private void PrintPreviewControlPanel_MouseUp(object sender, MouseEventArgs e)
         {
             if (ClipMode && _isClipping)
@@ -114,6 +158,9 @@ namespace PrintModule_ReConstruction_
             }
         }
 
+        /// <summary>
+        /// 保存图片至本地
+        /// </summary>
         private void SaveBitmapToLocal(Bitmap clipImg)
         {
             using (SaveFileDialog savefileDialog = new SaveFileDialog())
@@ -130,6 +177,9 @@ namespace PrintModule_ReConstruction_
             }
         }
 
+        /// <summary>
+        /// 根据不同的图片格式保存图片
+        /// </summary>
         private void SaveBitmapWithSelectedFormat(Bitmap clipImg, SaveFileDialog savefileDialog, FileStream fs)
         {
             switch (savefileDialog.FilterIndex)
@@ -137,21 +187,32 @@ namespace PrintModule_ReConstruction_
                 case 1:
                     clipImg.Save(fs, System.Drawing.Imaging.ImageFormat.Jpeg);
                     break;
+
                 case 2:
                     clipImg.Save(fs, System.Drawing.Imaging.ImageFormat.Bmp);
                     break;
+
                 case 3:
                     clipImg.Save(fs, System.Drawing.Imaging.ImageFormat.Gif);
                     break;
+
                 case 4:
                     clipImg.Save(fs, System.Drawing.Imaging.ImageFormat.Png);
                     break;
+
                 case 5:
                     clipImg.Save(fs, System.Drawing.Imaging.ImageFormat.Tiff);
                     break;
             }
         }
 
+        #endregion 鼠标抬起结束裁剪保存图片
+
+        #region 重绘
+
+        /// <summary>
+        /// 鼠标拖动过程中不断重绘裁剪框
+        /// </summary>
         private void PrintPreviewControlPanel_Paint(object sender, PaintEventArgs e)
         {
             if (ClipMode && _isClipping)
@@ -162,5 +223,7 @@ namespace PrintModule_ReConstruction_
                 }
             }
         }
+
+        #endregion 重绘
     }
 }

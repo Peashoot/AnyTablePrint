@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
-using System.Drawing.Printing;
 using System.Drawing.Drawing2D;
+using System.Linq;
+using System.Windows.Forms;
 
 namespace AnyTablePrint
 {
@@ -18,14 +14,16 @@ namespace AnyTablePrint
         {
             InitializeComponent();
         }
-        List<int[]> CombineList = new List<int[]>();//合并的单元格参数列表
-        Point CellLocation;                         //鼠标右键点击时单元格的位置，X表示行号，Y表示列号
-        StringFormat fmt = new StringFormat();      //合并单元格显示的字体格式
-        int limitheight = 1100;                      //分页的限制高度
-        int startRowIndex = 0, endRowIndex = 0;     //分页打印的起止打印行
-        int disHeight = 0;
+
+        private List<int[]> CombineList = new List<int[]>();//合并的单元格参数列表
+        private Point CellLocation;                         //鼠标右键点击时单元格的位置，X表示行号，Y表示列号
+        private StringFormat fmt = new StringFormat();      //合并单元格显示的字体格式
+        private int limitheight = 1100;                      //分页的限制高度
+        private int startRowIndex = 0, endRowIndex = 0;     //分页打印的起止打印行
+        private int disHeight = 0;
 
         #region 界面加载和控件事件
+
         /// <summary>
         /// 界面加载
         /// </summary>
@@ -52,6 +50,7 @@ namespace AnyTablePrint
             fmt.FormatFlags = StringFormatFlags.LineLimit;//自动换行
             endRowIndex = dgv_PreviewTable.Rows.Count;
         }
+
         /// <summary>
         /// 判断是增加行还是删除行
         /// </summary>
@@ -74,6 +73,7 @@ namespace AnyTablePrint
                 CombineList.ForEach(a => a[1] -= a[1] > dgv_PreviewTable.Rows.Count - 1 ? 1 : 0);
             }
         }
+
         /// <summary>
         /// 判断是增加列还是删除列
         /// </summary>
@@ -100,6 +100,7 @@ namespace AnyTablePrint
                 CombineList.ForEach(a => a[3] -= a[3] > dgv_PreviewTable.Columns.Count - 1 ? 1 : 0);
             }
         }
+
         /// <summary>
         /// 右键显示右键列表
         /// </summary>
@@ -119,6 +120,7 @@ namespace AnyTablePrint
                 cms_dgvRightOperation.Show(dgv_PreviewTable, dgv_PreviewTable.PointToClient(Control.MousePosition));
             }
         }
+
         /// <summary>
         /// 列表重绘
         /// </summary>
@@ -131,6 +133,7 @@ namespace AnyTablePrint
                 CombineCells.MergeCells(dgv_PreviewTable, e, array);
             }
         }
+
         /// <summary>
         /// 测试重绘界面所需要的时间
         /// </summary>
@@ -138,7 +141,6 @@ namespace AnyTablePrint
         /// <param name="e"></param>
         private void btn_test_Click(object sender, EventArgs e)
         {
-
             CombineList.Clear();
             for (int i = 0; i < dgv_PreviewTable.Rows.Count; i++, i++)
             {
@@ -156,8 +158,11 @@ namespace AnyTablePrint
             TimeSpan ts2 = sw.Elapsed;
             MessageBox.Show("Load over use time " + ts2.TotalMilliseconds + "ms");
         }
-        #endregion
+
+        #endregion 界面加载和控件事件
+
         #region 右键菜单事件
+
         /// <summary>
         /// 上方增加一行
         /// </summary>
@@ -172,6 +177,7 @@ namespace AnyTablePrint
                 a[1] += a[1] > CellLocation.X - 1 ? 1 : 0;
             });
         }
+
         /// <summary>
         /// 删除当前行
         /// </summary>
@@ -186,6 +192,7 @@ namespace AnyTablePrint
                 a[1] -= a[1] > CellLocation.X ? 1 : 0;
             });
         }
+
         /// <summary>
         /// 左侧增加一列
         /// </summary>
@@ -204,6 +211,7 @@ namespace AnyTablePrint
                 a[3] += a[3] > CellLocation.Y - 1 ? 1 : 0;
             });
         }
+
         /// <summary>
         /// 删除当前列
         /// </summary>
@@ -218,6 +226,7 @@ namespace AnyTablePrint
                 a[3] -= a[3] > CellLocation.Y ? 1 : 0;
             });
         }
+
         /// <summary>
         /// 合并选中的单元格
         /// </summary>
@@ -254,6 +263,7 @@ namespace AnyTablePrint
             }
             dgv_PreviewTable.Refresh();
         }
+
         /// <summary>
         /// 判断arrayA和arrayB是否有交集
         /// </summary>
@@ -278,6 +288,7 @@ namespace AnyTablePrint
             }
             return false;
         }
+
         /// <summary>
         /// 取消合并单元格
         /// </summary>
@@ -288,6 +299,7 @@ namespace AnyTablePrint
             CombineList.RemoveAll(a => a[0] <= CellLocation.X && a[1] >= CellLocation.X && a[2] <= CellLocation.Y && a[3] >= CellLocation.Y);
             dgv_PreviewTable.Refresh();
         }
+
         /// <summary>
         /// 界面刷新
         /// </summary>
@@ -297,6 +309,7 @@ namespace AnyTablePrint
         {
             dgv_PreviewTable.Refresh();
         }
+
         /// <summary>
         /// 清空合并列表
         /// </summary>
@@ -307,8 +320,11 @@ namespace AnyTablePrint
             CombineList.Clear();
             dgv_PreviewTable.Refresh();
         }
-        #endregion
+
+        #endregion 右键菜单事件
+
         #region 打印事件
+
         /// <summary>
         /// 打印预览
         /// </summary>
@@ -326,6 +342,7 @@ namespace AnyTablePrint
                 printpreviewdialog.ShowDialog();
             }
         }
+
         /// <summary>
         /// 打印文件生成
         /// </summary>
@@ -335,9 +352,12 @@ namespace AnyTablePrint
         {
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
             e.Graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-            e.Graphics.CompositingQuality = CompositingQuality.HighQuality;  
+            e.Graphics.CompositingQuality = CompositingQuality.HighQuality;
+
             #region 分页打印
+
             #region 判断分页
+
             int startX = 30, startY = 30;
             DataGridViewCell currentcell = dgv_PreviewTable.Rows[0].Cells[0];                   //当前单元格
             int height = 0;
@@ -365,8 +385,11 @@ namespace AnyTablePrint
                 MessageBox.Show("单元格长度超出限定值，无法分页打印！");
                 return;
             }
-            #endregion
+
+            #endregion 判断分页
+
             #region 画单元格
+
             //根据单元格一个一个算比例一个一个单元格的画,再判断哪些线需要画
             using (Pen lineColor = new Pen(Color.Black, 0.2f))
             {
@@ -380,25 +403,24 @@ namespace AnyTablePrint
                         rtPoint = new Point(ltPoint.X + currentcell.Size.Width, ltPoint.Y);         //右上顶点
                         lbPoint = new Point(ltPoint.X, ltPoint.Y + currentcell.Size.Height);        //左下顶点
                         rbPoint = new Point(rtPoint.X, lbPoint.Y);                                  //右下顶点
-                        int paint = JudgeKindofCell(dgv_PreviewTable, currentcell);
-                        if (paint > 15)
+                        int[] paintarray = JudgeKindofCell(dgv_PreviewTable, currentcell);
+                        if (paintarray[0] == 1)
                         {
                             FillSingleCell(dgv_PreviewTable, currentcell, e, new Point(startX, startY));
                         }
-                        string paintstr = Convert.ToString(paint, 2).PadLeft(5, '0');
-                        if (paintstr[1] == '1')
+                        if (paintarray[1] == 1)
                         {
                             e.Graphics.DrawLine(lineColor, ltPoint, lbPoint);                       //左上左下，左边线
                         }
-                        if (paintstr[2] == '1' || currentcell.RowIndex == startRowIndex)
+                        if (paintarray[2] == 1 || currentcell.RowIndex == startRowIndex)
                         {
                             e.Graphics.DrawLine(lineColor, ltPoint, rtPoint);                       //左上右上，上边线
                         }
-                        if (paintstr[3] == '1')
+                        if (paintarray[3] == 1)
                         {
                             e.Graphics.DrawLine(lineColor, rtPoint, rbPoint);                       //右上右下，右边线
                         }
-                        if (paintstr[4] == '1')
+                        if (paintarray[4] == 1)
                         {
                             e.Graphics.DrawLine(lineColor, lbPoint, rbPoint);                       //左下右下，下边线
                         }
@@ -407,8 +429,11 @@ namespace AnyTablePrint
                     ltPoint = new Point(startX, lbPoint.Y);
                 }
             }
-            #endregion
+
+            #endregion 画单元格
+
             #region 打印文本
+
             //添加打印的文本
             string cellText;                                                               //需要打印的文本
             foreach (int[] array in CombineList)
@@ -456,7 +481,9 @@ namespace AnyTablePrint
                     }
                 }
             }
-            #endregion
+
+            #endregion 打印文本
+
             if (endRowIndex < dgv_PreviewTable.Rows.Count)
             {
                 disHeight = dgv_PreviewTable.GetRowDisplayRectangle(endRowIndex, false).Y - 1;
@@ -471,8 +498,11 @@ namespace AnyTablePrint
                 endRowIndex = dgv_PreviewTable.Rows.Count;
                 e.HasMorePages = false;
             }
-            #endregion
+
+            #endregion 分页打印
+
             #region 单页打印
+
             ////根据单元格一个一个算比例一个一个单元格的画,再判断哪些线需要画
             //Pen lineColor = new Pen(Color.Black, 0.2f);
             ////表格总宽度1100
@@ -534,119 +564,67 @@ namespace AnyTablePrint
             //    reBounds.Height = Top - 1;
             //    e.Graphics.DrawString(cellText, tFont, tBrush, reBounds, fmt);
             //}
-            #endregion
+
+            #endregion 单页打印
         }
+
         /// <summary>
         /// 根据单元格判断单元格需要画的线
         /// </summary>
         /// <param name="dgv"></param>
         /// <param name="cell"></param>
         /// <returns></returns>
-        private int JudgeKindofCell(DataGridView dgv, DataGridViewCell cell)
+        private int[] JudgeKindofCell(DataGridView dgv, DataGridViewCell cell)
         {
             //用四位二进制数来表示是否画线1，1表示画，0表示不画，从最高位开始分别为左边线，上边线，右边线，下边线
             //四个角
             int[] array = JudgeCollectionofCell(dgv, cell);
+            int[] retarray = new int[5];
             if (array == null)
             {
                 #region 不属于合并单元格的范围
-                //一、画4条线的
-                if (cell.RowIndex == 0 && cell.ColumnIndex == 0)    //四边线全画，返回31,11111
+
+                retarray[0] = 1;
+                if (cell.ColumnIndex == 0)
                 {
-                    return 31;
+                    retarray[1] = 1;
                 }
-                //二、画3条线的
-                else if (cell.RowIndex == 0)                        //不画左边线，返回23,10111
+                if (cell.RowIndex == 0)
                 {
-                    return 23;
+                    retarray[2] = 1;
                 }
-                else if (cell.ColumnIndex == 0)                     //不画上边线，返回27,11011
-                {
-                    return 27;
-                }
-                //三、画2条线的
-                else                                                //画右边线和下边线，返回19,10011
-                {
-                    return 19;
-                }
-                #endregion
+                retarray[3] = 1;
+                retarray[4] = 1;
+
+                #endregion 不属于合并单元格的范围
             }
             else
             {
                 #region 属于合并单元格的范围
-                //一、画4条线的
-                if (array[0] == cell.RowIndex && cell.RowIndex == array[1] && array[2] == cell.ColumnIndex && cell.ColumnIndex == array[3])   //画四条线，返回15,01111
+
+                retarray[0] = 0;
+                if (array[0] == cell.RowIndex)
                 {
-                    return 15;
+                    retarray[2] = 1;
                 }
-                //二、画3条线的
-                else if (array[0] == cell.RowIndex && cell.RowIndex == array[1] && array[2] == cell.ColumnIndex && cell.ColumnIndex < array[3])    //不画右边线，返回13,01011
+                if (cell.RowIndex == array[1])
                 {
-                    return 13;
+                    retarray[4] = 1;
                 }
-                else if (array[0] == cell.RowIndex && cell.RowIndex < array[1] && array[2] == cell.ColumnIndex && cell.ColumnIndex == array[3])    //不画下边线，返回14,01110
+                if (array[2] == cell.ColumnIndex)
                 {
-                    return 14;
+                    retarray[1] = 1;
                 }
-                else if (array[0] == cell.RowIndex && cell.RowIndex == array[1] && array[2] < cell.ColumnIndex && cell.ColumnIndex == array[3])    //不画左边线，返回7,00111
+                if (cell.ColumnIndex == array[3])
                 {
-                    return 7;
+                    retarray[3] = 1;
                 }
-                else if (array[0] < cell.RowIndex && cell.RowIndex == array[1] && array[2] == cell.ColumnIndex && cell.ColumnIndex == array[3])    //不画上边线，返回11,01011
-                {
-                    return 11;
-                }
-                //三、画2条线的
-                else if (array[0] == cell.RowIndex && cell.RowIndex < array[1] && array[2] == cell.ColumnIndex && cell.ColumnIndex < array[3])     //画左边线和上边线，返回12,01100
-                {
-                    return 12;
-                }
-                else if (array[0] == cell.RowIndex && cell.RowIndex < array[1] && array[2] < cell.ColumnIndex && cell.ColumnIndex == array[3])     //画上边线和右边线，返回6，00110
-                {
-                    return 6;
-                }
-                else if (array[0] < cell.RowIndex && cell.RowIndex == array[1] && array[2] < cell.ColumnIndex && cell.ColumnIndex == array[3])     //画右边线和下边线，返回3,00011
-                {
-                    return 3;
-                }
-                else if (array[0] < cell.RowIndex && cell.RowIndex == array[1] && array[2] == cell.ColumnIndex && cell.ColumnIndex < array[3])     //画下边线和左边线，返回9，01001
-                {
-                    return 9;
-                }
-                else if (array[0] == cell.RowIndex && cell.RowIndex == array[1] && array[2] < cell.ColumnIndex && cell.ColumnIndex < array[3])     //画上边线和下边线，返回5,00101
-                {
-                    return 5;
-                }
-                else if (array[0] < cell.RowIndex && cell.RowIndex < array[1] && array[2] == cell.ColumnIndex && cell.ColumnIndex == array[3])     //画左边线和右边线，返回10,01010
-                {
-                    return 10;
-                }
-                //四、画1条线的
-                else if (array[0] < cell.RowIndex && cell.RowIndex < array[1] && array[2] == cell.ColumnIndex && cell.ColumnIndex < array[3])      //画左边线，返回8，01000
-                {
-                    return 8;
-                }
-                else if (array[0] == cell.RowIndex && cell.RowIndex < array[1] && array[2] < cell.ColumnIndex && cell.ColumnIndex < array[3])      //画上边线，返回4，00100
-                {
-                    return 4;
-                }
-                else if (array[0] < cell.RowIndex && cell.RowIndex < array[1] && array[2] < cell.ColumnIndex && cell.ColumnIndex == array[3])      //画右边线，返回2,00010
-                {
-                    return 2;
-                }
-                else if (array[0] < cell.RowIndex && cell.RowIndex == array[1] && array[2] < cell.ColumnIndex && cell.ColumnIndex < array[3])      //画下边线，返回1,00001
-                {
-                    return 1;
-                }
-                //五、不画的
-                else if (array[0] < cell.RowIndex && cell.RowIndex < array[1] && array[2] < cell.ColumnIndex && cell.ColumnIndex < array[3])       //一条不画,返回0,00000
-                {
-                    return 0;
-                }
-                #endregion
+
+                #endregion 属于合并单元格的范围
             }
-            return 0;
+            return retarray;
         }
+
         /// <summary>
         /// 判断单元格是否属于某个已合并的单元格内
         /// </summary>
@@ -664,6 +642,7 @@ namespace AnyTablePrint
             }
             return null;
         }
+
         /// <summary>
         /// 填写每个单元格的内容
         /// </summary>
@@ -696,6 +675,7 @@ namespace AnyTablePrint
                 e.Graphics.DrawString(cellText, tFont, tBrush, reBounds, fmt);
             }
         }
-        #endregion
+
+        #endregion 打印事件
     }
 }

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace PrintModule
+﻿namespace PrintModule
 {
     public class TagInfo
     {
@@ -12,10 +7,12 @@ namespace PrintModule
             this.Type = Type;
             this.Info = Info;
         }
+
         /// <summary>
         /// PictureBox的种类
         /// </summary>
         public string Type { get; set; }
+
         /// <summary>
         /// Image包含的信息
         /// </summary>

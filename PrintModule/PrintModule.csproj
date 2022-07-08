@@ -38,6 +38,13 @@
     <ApplicationIcon>timg.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="RestSharp">
+      <HintPath>.\RestSharp.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
@@ -56,6 +63,7 @@
   <ItemGroup>
     <Compile Include="ExportInfo.cs" />
     <Compile Include="Extend.cs" />
+    <Compile Include="IssueLayoutHelper.cs" />
     <Compile Include="LoadResourceDll.cs" />
     <Compile Include="PrintForm.cs">
       <SubType>Form</SubType>
@@ -96,9 +104,7 @@
     <Content Include="timg.ico" />
     <EmbeddedResource Include="zxing.dll" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="bin\Debug\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

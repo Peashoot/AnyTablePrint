@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Reflection;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace PrintModule
 {
-    static class LoadResourceDll
+    internal static class LoadResourceDll
     {
-        static Dictionary<string, Assembly> Dlls = new Dictionary<string, Assembly>();
-        static Dictionary<string, object> Assemblies = new Dictionary<string, object>();
+        private static Dictionary<string, Assembly> Dlls = new Dictionary<string, Assembly>();
+        private static Dictionary<string, object> Assemblies = new Dictionary<string, object>();
 
-        static Assembly AssemblyResolve(object sender, ResolveEventArgs args)
+        private static Assembly AssemblyResolve(object sender, ResolveEventArgs args)
         {
             //程序集
             Assembly ass;
